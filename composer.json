@@ -1,36 +1,37 @@
 {
-  "name":              "plhw/hf-oauth2-client",
-  "description":       "Provides means to obtain token from our OAuth2 server",
-  "type":              "library",
-  "license":           "proprietary",
-  "authors":           [
+  "name":         "plhw/hf-api-client",
+  "description":  "PLHW API Client provides means to authenticate clients against with OAuth2 server and issue authorized requests to our api endpoints",
+  "type":         "library",
+  "license":      "proprietary",
+  "authors":      [
     {
       "name":  "Bas Kamer",
       "email": "baskamer@gmail.com"
     }
   ],
-  "config":            {
+  "config":       {
     "optimize-autoloader": true,
     "sort-packages":       true
   },
-  "require":           {
-    "php": "^5.6 || ^7.0",
-    "league/oauth2-client": "^2.2",
-    "roave/security-advisories": "dev-master",
-    "zendframework/zend-cache": "^2.7",
-    "zendframework/zend-serializer": "^2.8"
+  "require":      {
+    "php":                           "^7.0",
+    "league/oauth2-client":          "^2.2",
+    "roave/security-advisories":     "dev-master",
+    "zendframework/zend-cache":      "^2.7",
+    "zendframework/zend-serializer": "^2.8",
+    "zendframework/zendservice-api": "dev-master"
   },
-  "require-dev":       {
-    "plhw/hf-cs-fixer-config":  "^1.0"
+  "require-dev":  {
+    "plhw/hf-cs-fixer-config": "^1.0"
   },
-  "autoload":          {
+  "autoload":     {
     "psr-4": {
-      "HF\\OAuth2\\Client\\": "src/"
+      "HF\\ApiClient\\": "src/"
     }
   },
-  "autoload-dev":      {
+  "autoload-dev": {
     "psr-4": {
-      "HFTest\\OAuth2\\Client\\": "test/src/"
+      "HFTest\\ApiClient\\": "tests/src/"
     }
   }
 }

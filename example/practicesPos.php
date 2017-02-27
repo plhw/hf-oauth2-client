@@ -1,0 +1,57 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types = 1);
+
+$autoloadFiles = [
+    __DIR__ . '/../../../vendor/autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/vendor/autoload.php',
+];
+
+chdir(__DIR__ . '/..');
+
+foreach ($autoloadFiles as $autoloadFile) {
+    if (file_exists($autoloadFile)) {
+        require_once $autoloadFile;
+    }
+}
+
+use HF\ApiClient\ApiClient;
+use HF\ApiClient\Options\Options;
+use Zend\Cache\StorageFactory;
+
+if (!file_exists(__DIR__ . '/conf.php')) {
+    print "copy example/conf.php.dist to example/conf.php";
+
+    die();
+}
+
+// optional but will then use filesystem default tmp directory
+$cache = StorageFactory::factory([
+    'adapter' => [
+        'name'    => 'filesystem',
+        'options' => [
+            'cache_dir' => './data/cache',
+        ],
+    ],
+    'plugins' => ['serializer'],
+]);
+
+$options = Options::fromArray(include(__DIR__ . '/conf.php'));
+
+$api = ApiClient::createClient($options, $cache);
+
+$results = $api->customer_posAroundCoordinate('52.3629882,4.8593175', 15000, 'insoles');
+
+if ($api->isSuccess()) {
+    foreach ($results['data'] as $result) {
+        printf("Practice %s on %skm\n", $result['attributes']['name'],
+            round(($result['attributes']['distance'] / 100)) / 10);
+        printf(" - sells %s\n", implode(', ', $result['attributes']['products']));
+    }
+} else {
+    printf("Error (%d)\n", $api->getStatusCode());
+    print_r($results);
+}

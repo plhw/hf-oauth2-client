@@ -1,23 +1,42 @@
-# PLHW OAuth2 Client Provider
+# PLHW Api Client
 
-OAuth2 Client provides means to retrieve and cache an access token to be used whilst communicating with our API.
-
-Currently this library only supports the `ClientCredentialGrant` OAuth2 methodology.
+PLHW API Client provides means to authenticate clients against with OAuth2 server and issue authorized requests to our api endpoints.
 
 
 ## Installation
 
 ```bash
-composer require plhw/hf-oauth2-client:^0.1
+composer require plhw/hf-api-client:^0.1
 ```
 
 ## Usage
 
-Your application needs to authenticate all requests to our api with a Bearer access token. This is done by adding a Authorization header.
+```
+$options = \HF\ApiClient\Options\Options::fromArray(
+    [
+        'server_uri'    => 'https://api.plhw.nl',
+        'client_id'     => $clientId,
+        'client_secret' => $clientSecret,    
+        'scope'         => 'customer_pos',
+        'grant_type'    => 'client_credentials',
+    ]
+);
 
-There are many ways to do this, so we'll leave that part to you (for now)
+$api = \HF\ApiClient\ApiClient::createClient($options, $cache);
 
-Getting a token : see the example directory
+$results = $api->customer_posAroundCoordinate('52.3629882,4.8593175', 15000, 'insoles');
+
+if ($api->isSuccess()) {
+    foreach ($results['data'] as $result) {
+        printf("Practice %s on %skm\n", $result['attributes']['name'],
+            round(($result['attributes']['distance'] / 100)) / 10);
+        printf(" - sells %s\n", implode(', ', $result['attributes']['products']));
+    }
+} else {
+    printf("Error (%d): %s\n", $api->getStatusCode(), $result);
+}
+
+```
 
 see api [documentation](https://api.plhw.nl/docs) for end points.
 

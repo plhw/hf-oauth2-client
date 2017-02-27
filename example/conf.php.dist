@@ -1,0 +1,11 @@
+<?php
+
+declare(strict_types = 1);
+
+return [
+    'server_uri'    => 'https://api.plhw.nl',
+    'client_id'     => 'get-from-us',
+    'client_secret' => 'get-from-us',
+    'scope'         => 'commerce_catalogue customer_pos',
+    'grant_type'    => 'client_credentials',
+];

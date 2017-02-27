@@ -18,8 +18,7 @@ use ZendService\Api\Api;
  *
  * @method array commerce_getArticleGroup(string $articleGroupId)
  * @method array commerce_listArticleGroups()
- * @method customer_posAroundCoordinate(string $aroundCoordinate, int $distance = null, string $product = null, string
- *         $country = null);
+ * @method array customer_posAroundCoordinate(string $aroundCoordinate, int $distance = null, string $product = null, string $country = null);
  */
 final class ApiClient
 {
@@ -76,21 +75,13 @@ final class ApiClient
      */
     public function __call($name, $params)
     {
-        try {
-            if ($accessToken = $this->getAccessToken($this->options->getGrantType(), $this->options->getScope())) {
-                $this->api->setHeaders(['Authorization' => sprintf('Bearer %s', $accessToken->getToken())]);
-            }
-        } catch (IdentityProviderException $e) {
-            var_dump($e->getResponseBody());
-
-            die();
+        if ($accessToken = $this->getAccessToken($this->options->getGrantType(), $this->options->getScope())) {
+            $this->api->setHeaders(['Authorization' => sprintf('Bearer %s', $accessToken->getToken())]);
         }
 
-        $result = call_user_func_array([$this->api, $name], $params);
-
+        $result  = call_user_func_array([$this->api, $name], $params);
         $headers = (new Headers())->addHeaders($this->api->getResponseHeaders());
 
-        $contentType = null;
         if ($headers->has('Content-Type')) {
             $contentType = $headers->get('Content-Type');
 
@@ -98,17 +89,19 @@ final class ApiClient
                 throw new \Exception(sprintf("Unexpected Content-Type of '%s' received",
                     $contentType->getFieldValue()));
             }
+        }
 
-            if (! $this->api->isSuccess()) {
-                $result = $this->api->getErrorMsg();
-            }
-
+        if (! $this->api->isSuccess()) {
+            $result = $this->api->getErrorMsg();
             $result = json_decode($result, true);
         }
 
         if (! $this->api->isSuccess()) {
-            if ($result['error'] === 'Access token has expired or has been deleted') {
+            if ($result['error'] === 'invalid_token') {
                 $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
+
+                // call again
+                call_user_func_array([$this, $name], $params);
             }
         }
 

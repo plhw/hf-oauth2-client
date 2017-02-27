@@ -22,8 +22,8 @@ use HF\ApiClient\ApiClient;
 use HF\ApiClient\Options\Options;
 use Zend\Cache\StorageFactory;
 
-if (!file_exists(__DIR__ . '/conf.php')) {
-    print "copy example/conf.php.dist to example/conf.php";
+if (! file_exists(__DIR__ . '/conf.php')) {
+    print 'copy example/conf.php.dist to example/conf.php';
 
     die();
 }
@@ -43,7 +43,14 @@ $options = Options::fromArray(include(__DIR__ . '/conf.php'));
 
 $api = ApiClient::createClient($options, $cache);
 
-$results = $api->commerce_listArticleGroups();
+try {
+    $results = $api->commerce_listArticleGroups();
+} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+    die($e->getMessage());
+} catch (\Exception $e) {
+    die($e->getMessage());
+}
+
 if ($api->isSuccess() && $results) {
     foreach ($results['data'] as $result) {
         printf("ArticleGroup %s : %s (%s)\n", $result['id'], $result['attributes']['description'], $result['attributes']['code']);
@@ -53,7 +60,13 @@ if ($api->isSuccess() && $results) {
     print_r($results);
 }
 
-$results = $api->commerce_getArticleGroup('fc7d0810-cc77-5c90-bea4-b92f6115a8a9');
+try {
+    $results = $api->commerce_getArticleGroup('fc7d0810-cc77-5c90-bea4-b92f6115a8a9');
+} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+    die($e->getMessage());
+} catch (\Exception $e) {
+    die($e->getMessage());
+}
 if ($api->isSuccess()) {
     print_r($results);
 } else {

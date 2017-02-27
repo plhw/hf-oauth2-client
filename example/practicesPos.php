@@ -22,8 +22,8 @@ use HF\ApiClient\ApiClient;
 use HF\ApiClient\Options\Options;
 use Zend\Cache\StorageFactory;
 
-if (!file_exists(__DIR__ . '/conf.php')) {
-    print "copy example/conf.php.dist to example/conf.php";
+if (! file_exists(__DIR__ . '/conf.php')) {
+    print 'copy example/conf.php.dist to example/conf.php';
 
     die();
 }
@@ -43,7 +43,13 @@ $options = Options::fromArray(include(__DIR__ . '/conf.php'));
 
 $api = ApiClient::createClient($options, $cache);
 
-$results = $api->customer_posAroundCoordinate('52.3629882,4.8593175', 15000, 'insoles');
+try {
+    $results = $api->customer_posAroundCoordinate('52.3629882,4.8593175', 15000, 'insoles');
+} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+    die($e->getMessage());
+} catch (\Exception $e) {
+    die($e->getMessage());
+}
 
 if ($api->isSuccess()) {
     foreach ($results['data'] as $result) {

@@ -32,6 +32,7 @@ return [
     'url'      => '/customer/practices/pos/around-coordinate' . $queryString,
     'method'   => 'GET',
     'response' => [
+        'format' => 'json',
         'valid_codes' => ['200'],
     ],
 ];

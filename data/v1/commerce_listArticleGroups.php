@@ -31,6 +31,7 @@ return [
     'url'      => '/commerce/article-groups' . $queryString,
     'method'   => 'POST',
     'response' => [
+        'format' => 'json',
         'valid_codes' => ['200'],
     ],
 ];

@@ -16,12 +16,14 @@ composer require plhw/hf-api-client
 Once you have succesfully installed the application, some example scripts are located at. To use them first copy an configuration file to your app root. 
 
 ```bash
-cp ./vendor/plhw/hf-api-client/example/.hf-api-client-example.php-dist ./.hf-api-client-example.php
+cp ./vendor/plhw/hf-api-client/example/.hf-api-client-secrets.php.dist ./.hf-api-client-secrets.php
 ```
 
-Open `.hf-api-client-example.php` and configure it with credentials you got from us.
+Open `.hf-api-client-secrets.php` and configure it with credentials you got from us.
 
-Now to can run the example scripts;
+Finally the example scripts are configured to use `data/cache` as directory for its cached accss tokens. This directory must exist (only for the examples).
+
+Now you can run the example scripts;
 
 ```bash
 php ./vendor/plhw/hf-api-client/example/practicesPos.php

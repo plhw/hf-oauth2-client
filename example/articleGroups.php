@@ -14,6 +14,7 @@ chdir(__DIR__ . '/..');
 
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
+        chdir(dirname($autoloadFile) . '/..');
         require_once $autoloadFile;
     }
 }
@@ -22,10 +23,8 @@ use HF\ApiClient\ApiClient;
 use HF\ApiClient\Options\Options;
 use Zend\Cache\StorageFactory;
 
-if (! file_exists(__DIR__ . '/conf.php')) {
-    print 'copy example/conf.php.dist to example/conf.php';
-
-    die();
+if (! file_exists('.hf-api-client-secrets.php')) {
+    die('copy example/.hf-api-client-secrets.php.dist to APP_ROOT/.hf-api-client-secrets.php');
 }
 
 // optional but will then use filesystem default tmp directory
@@ -39,7 +38,7 @@ $cache = StorageFactory::factory([
     'plugins' => ['serializer'],
 ]);
 
-$options = Options::fromArray(include(__DIR__ . '/conf.php'));
+$options = Options::fromArray(include('.hf-api-client-secrets.php'));
 
 $api = ApiClient::createClient($options, $cache);
 

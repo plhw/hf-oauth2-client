@@ -4,6 +4,7 @@
 declare(strict_types = 1);
 
 $autoloadFiles = [
+    __DIR__ . '/../../../../vendor/autoload.php',
     __DIR__ . '/../../../vendor/autoload.php',
     __DIR__ . '/../../vendor/autoload.php',
     __DIR__ . '/../vendor/autoload.php',

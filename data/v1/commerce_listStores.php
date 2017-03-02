@@ -4,7 +4,7 @@
 $query = $params[0] ?? \HF\ApiClient\Query\Query::create();
 
 return [
-    'url'      => '/commerce/article-groups' . (string) $query,
+    'url'      => '/commerce/stores' . (string) $query,
     'method'   => 'GET',
     'response' => [
         'format' => 'json',

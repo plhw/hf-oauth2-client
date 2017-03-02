@@ -11,6 +11,8 @@ $autoloadFiles = [
     __DIR__ . '/vendor/autoload.php',
 ];
 
+chdir(__DIR__ . '/..');
+
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
         chdir(dirname($autoloadFile) . '/..');
@@ -42,23 +44,34 @@ $options = Options::fromArray(include('.hf-api-client-secrets.php'));
 $api = ApiClient::createClient($options, $cache);
 
 $query = \HF\ApiClient\Query\Query::create()
-    ->withFilter('around', '52.3629882,4.8593175')
-    ->withFilter('distance', 10000)
-    ->withFilter('product', 'insoles');
+    ->withIncluded('article_groups');
 
 try {
-    $results = $api->customer_posAroundCoordinate($query);
+    $results = $api->commerce_listStores($query);
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
 } catch (\Exception $e) {
     die($e->getMessage());
 }
 
-if ($api->isSuccess()) {
+if ($api->isSuccess() && $results) {
     foreach ($results['data'] as $result) {
-        printf("Practice %s on %skm\n", $result['attributes']['name'],
-            round(($result['attributes']['distance'] / 100)) / 10);
-        printf(" - sells %s\n", implode(', ', $result['attributes']['products']));
+        printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],
+            $result['attributes']['description']);
+
+        foreach ($result['relationships']['article_groups']['data'] as $rel) {
+            foreach ($results['included'] as $include) {
+                if ($include['id'] === $rel['id']) {
+                    printf(
+                        "ArticleGroup %s : %s (%s:%s)\n",
+                        $include['id'],
+                        $include['attributes']['description'],
+                        $include['attributes']['ledger_number'],
+                        $include['attributes']['code']
+                    );
+                }
+            }
+        }
     }
 } else {
     printf("Error (%d)\n", $api->getStatusCode());

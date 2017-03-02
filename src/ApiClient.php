@@ -6,6 +6,7 @@ namespace HF\ApiClient;
 
 use HF\ApiClient\Options\Options;
 use HF\ApiClient\Provider\PLHWProvider;
+use HF\ApiClient\Query\Query;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Zend\Cache\Storage\StorageInterface;
@@ -18,7 +19,7 @@ use ZendService\Api\Api;
  *
  * @method array commerce_getArticleGroup(string $articleGroupId)
  * @method array commerce_listArticleGroups()
- * @method array customer_posAroundCoordinate(string $aroundCoordinate, int $distance = null, string $product = null, string $country = null);
+ * @method array customer_posAroundCoordinate(Query $query);
  */
 final class ApiClient
 {

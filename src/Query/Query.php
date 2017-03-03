@@ -94,7 +94,7 @@ class Query
             $query['include'] = implode(',', $this->include);
         }
 
-        $queryString = urldecode(http_build_query($query, null, '&', PHP_QUERY_RFC3986));
+        $queryString = urldecode(http_build_query($query, '', '&', PHP_QUERY_RFC3986));
 
         return $queryString ? '?' . $queryString : '';
     }

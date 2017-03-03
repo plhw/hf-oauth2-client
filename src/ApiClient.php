@@ -1,6 +1,18 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
+/**
+ * Project 'Healthy Feet' by Podolab Hoeksche Waard
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @link      https://plhw.nl/
+ * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
+ * @author    Bas Kamer <baskamer@gmnail.com>
+ * @license   Proprietary License
+ */
 
 namespace HF\ApiClient;
 
@@ -18,8 +30,10 @@ use ZendService\Api\Api;
  * Class ApiClient
  *
  * @method array commerce_getArticleGroup(string $articleGroupId)
- * @method array commerce_listArticleGroups()
+ * @method array commerce_listArticleGroups(Query $query)
+ * @method array commerce_listStores(Query $query)
  * @method array customer_posAroundCoordinate(Query $query);
+ *
  */
 final class ApiClient
 {

@@ -23,6 +23,7 @@
     "zendframework/zendservice-api": "dev-master"
   },
   "require-dev":  {
+    "malukenho/docheader": "^0.1.5",
     "plhw/hf-cs-fixer-config": "^1.0"
   },
   "autoload":     {
@@ -34,5 +35,10 @@
     "psr-4": {
       "HFTest\\ApiClient\\": "tests/src/"
     }
+  },
+  "scripts" : {
+    "cs": "php-cs-fixer fix -v --diff --dry-run && docheader check src",
+    "cs-fix": "php-cs-fixer fix -v --diff",
+    "test-postgres": "vendor/bin/phpunit -c phpunit.xml.pdo_pgsql"
   }
 }

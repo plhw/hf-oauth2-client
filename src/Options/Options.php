@@ -10,7 +10,7 @@ declare(strict_types=1);
  *
  * @link      https://plhw.nl/
  * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
- * @author    Bas Kamer <baskamer@gmnail.com>
+ * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
  */
 

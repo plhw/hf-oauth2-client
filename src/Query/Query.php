@@ -41,9 +41,9 @@ class Query
         $query = clone $this;
 
         if ($value === null) {
-            unset($query->filter[$term]);
+            unset($query->filter[$property]);
         } else {
-            $query->filter[$term] = $value;
+            $query->filter[$property] = $value;
         }
 
         return $query;

@@ -14,16 +14,16 @@
     "sort-packages":       true
   },
   "require":      {
-    "php": "^7.0",
-    "beberlei/assert": "^2.7",
-    "league/oauth2-client": "^2.2",
-    "roave/security-advisories": "dev-master",
-    "zendframework/zend-cache": "^2.7",
+    "php":                           "^7.0",
+    "beberlei/assert":               "^2.7",
+    "league/oauth2-client":          "^2.2",
+    "roave/security-advisories":     "dev-master",
+    "zendframework/zend-cache":      "^2.7",
     "zendframework/zend-serializer": "^2.8",
     "zendframework/zendservice-api": "^2.0"
   },
   "require-dev":  {
-    "malukenho/docheader": "^0.1.5",
+    "malukenho/docheader":     "^0.1",
     "plhw/hf-cs-fixer-config": "^1.0"
   },
   "autoload":     {
@@ -36,12 +36,12 @@
       "HFTest\\ApiClient\\": "tests/src/"
     }
   },
-  "scripts" : {
-    "check":            [
+  "scripts":      {
+    "check":  [
       "@cs",
       "@header"
     ],
-    "cs": "php-cs-fixer fix -v --diff --dry-run",
+    "cs":     "php-cs-fixer fix -v --diff --dry-run",
     "cs-fix": "php-cs-fixer fix -v --diff",
     "header": "docheader check src"
   }

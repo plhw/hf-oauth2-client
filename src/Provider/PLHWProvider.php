@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-/**
- * Project 'Healthy Feet' by Podolab Hoeksche Waard
+/*
+ * Project 'Healthy Feet' by Podolab Hoeksche Waard.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @link      https://plhw.nl/
+ * @see       https://plhw.nl/
+ *
  * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License

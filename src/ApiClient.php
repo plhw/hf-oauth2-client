@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-/**
- * Project 'Healthy Feet' by Podolab Hoeksche Waard
+/*
+ * Project 'Healthy Feet' by Podolab Hoeksche Waard.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @link      https://plhw.nl/
+ * @see       https://plhw.nl/
+ *
  * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
@@ -27,13 +28,12 @@ use Zend\Http\Headers;
 use ZendService\Api\Api;
 
 /**
- * Class ApiClient
+ * Class ApiClient.
  *
  * @method array commerce_getArticleGroup(string $articleGroupId)
  * @method array commerce_listArticleGroups(Query $query)
  * @method array commerce_listStores(Query $query)
  * @method array customer_posAroundCoordinate(Query $query);
- *
  */
 final class ApiClient
 {
@@ -81,11 +81,13 @@ final class ApiClient
     }
 
     /**
-     * Proxies calls to API instance
+     * Proxies calls to API instance.
      *
      * @param $name
      * @param $params
+     *
      * @throws IdentityProviderException
+     *
      * @return mixed
      */
     public function __call($name, $params)

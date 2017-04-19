@@ -196,7 +196,8 @@ final class ApiClient
         if ($this->cache === null) {
             $this->cache = StorageFactory::factory([
                 'adapter' => [
-                    'name' => 'filesystem',
+                    'name'      => 'filesystem',
+                    'dir_level' => 0,
                 ],
                 'plugins' => ['serializer'],
             ]);

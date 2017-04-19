@@ -34,6 +34,7 @@ $cache = StorageFactory::factory([
         'name'    => 'filesystem',
         'options' => [
             'cache_dir' => './data/cache',
+            'dir_level' => 0,
         ],
     ],
     'plugins' => ['serializer'],

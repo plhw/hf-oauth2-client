@@ -34,6 +34,7 @@ use ZendService\Api\Api;
  * @method array commerce_listArticleGroups(Query $query)
  * @method array commerce_listStores(Query $query)
  * @method array customer_posAroundCoordinate(Query $query);
+ * @method array dossier_attachmentsOfDossier(Query $query, string $dossierId);
  */
 final class ApiClient
 {

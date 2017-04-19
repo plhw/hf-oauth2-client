@@ -45,8 +45,10 @@ $api = ApiClient::createClient($options, $cache);
 
 $query = \HF\ApiClient\Query\Query::create()
     ->withFilter('around', '52.3629882,4.8593175')
-    ->withFilter('distance', 10000)
-    ->withFilter('product', 'insoles');
+    ->withFilter('distance', 50000)
+    ->withFilter('product', 'insoles')
+    ->withPage(1, 3)
+    ->withSort('name', false);
 
 try {
     $results = $api->customer_posAroundCoordinate($query);

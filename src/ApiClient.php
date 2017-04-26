@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace HF\ApiClient;
 
+use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Options\Options;
 use HF\ApiClient\Provider\PLHWProvider;
 use HF\ApiClient\Query\Query;
@@ -63,6 +64,11 @@ final class ApiClient
      */
     private $accessToken;
 
+    /**
+     * @var string
+     */
+    private $lastResponseBody = null;
+
     private function __construct(Options $options)
     {
         $this->options = $options;
@@ -97,15 +103,15 @@ final class ApiClient
             $this->api->setHeaders(['Authorization' => sprintf('Bearer %s', $accessToken->getToken())]);
         }
 
-        $result  = call_user_func_array([$this->api, $name], $params);
-        $headers = (new Headers())->addHeaders($this->api->getResponseHeaders());
+        $result                 = call_user_func_array([$this->api, $name], $params);
+        $headers                = (new Headers())->addHeaders($this->api->getResponseHeaders());
+        $this->lastResponseBody = $this->api->getHttpClient()->getResponse()->getBody();
 
         if ($headers->has('Content-Type')) {
             $contentType = $headers->get('Content-Type');
 
             if (! $contentType->match(['application/json', 'application/problem+json'])) {
-                throw new \Exception(sprintf("Unexpected Content-Type of '%s' received",
-                    $contentType->getFieldValue()));
+                throw GatewayException::backendRespondedWithMalformedPayload();
             }
         }
 
@@ -134,6 +140,11 @@ final class ApiClient
     public function getStatusCode(): int
     {
         return (int) $this->api->getStatusCode();
+    }
+
+    public function getLastResponseBody(): ?string
+    {
+        return $this->lastResponseBody;
     }
 
     private function getAccessToken(

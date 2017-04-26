@@ -54,8 +54,10 @@ try {
     $results = $api->customer_posAroundCoordinate($query);
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
-} catch (\Exception $e) {
-    die($e->getMessage());
+} catch (\HF\ApiClient\Exception\GatewayException $e) {
+    printf("%s\n\n", $e->getMessage());
+    printf('%s', $api->getLastResponseBody());
+    die();
 }
 
 if ($api->isSuccess()) {

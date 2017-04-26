@@ -53,8 +53,10 @@ try {
     $results = $api->dossier_attachmentsOfDossier($query, 'a652e443-ba3f-5841-936c-b6be5c5a2800');
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
-} catch (\Exception $e) {
-    die($e->getMessage());
+} catch (\HF\ApiClient\Exception\GatewayException $e) {
+    printf("%s\n\n", $e->getMessage());
+    printf('%s', $api->getLastResponseBody());
+    die();
 }
 
 if ($api->isSuccess()) {

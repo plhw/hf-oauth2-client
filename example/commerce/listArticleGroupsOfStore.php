@@ -44,11 +44,21 @@ $options = Options::fromArray(include('.hf-api-client-secrets.php'));
 
 $api = ApiClient::createClient($options, $cache);
 
-$query = \HF\ApiClient\Query\Query::create()
-    ->withIncluded('article_groups');
-
 try {
+    // we must get a storeId, which is different per environment.
+    // as an example i'll show how you can doe a search by name
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withFilter('query', 'shop.PLHW')
+        ->withPage(1, 1);
+
     $results = $api->commerce_listStores($query);
+    $storeId = $results['data'][0]['id'] ?? '';
+
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withSort('ledgerNumber', true)
+        ->withPage(1, 1000);
+
+    $results = $api->commerce_listArticleGroupsOfStore($query, $storeId);
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
 } catch (\HF\ApiClient\Exception\GatewayException $e) {
@@ -59,22 +69,12 @@ try {
 
 if ($api->isSuccess() && $results) {
     foreach ($results['data'] as $result) {
-        printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],
-            $result['attributes']['description']);
-
-        foreach ($result['relationships']['article_groups']['data'] as $rel) {
-            foreach ($results['included'] as $include) {
-                if ($include['id'] === $rel['id']) {
-                    printf(
-                        "ArticleGroup %s : %s (%s:%s)\n",
-                        $include['id'],
-                        $include['attributes']['description'],
-                        $include['attributes']['ledger_number'],
-                        $include['attributes']['code']
-                    );
-                }
-            }
-        }
+        printf("ArticleGroup %s : %s (%s: %s)\n",
+            $result['id'],
+            $result['attributes']['description'],
+            $result['attributes']['ledger_number'],
+            $result['attributes']['code']
+            );
     }
 } else {
     printf("Error (%d)\n", $api->getStatusCode());

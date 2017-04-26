@@ -31,11 +31,15 @@ use ZendService\Api\Api;
 /**
  * Class ApiClient.
  *
- * @method array commerce_getArticleGroup(string $articleGroupId)
- * @method array commerce_listArticleGroups(Query $query)
- * @method array commerce_listStores(Query $query)
- * @method array customer_posAroundCoordinate(Query $query);
- * @method array dossier_attachmentsOfDossier(Query $query, string $dossierId);
+ * @method array commerce_getArticleGroupOfStore(?Query $query, string $storeId, string $articleGroupId)
+ * @method array commerce_getProductGroupOfCatalogue(?Query $query, string $storeId, string $catalogueId, string $productGroupId)
+ * @method array commerce_getStore(Query $query, string $storeId)
+ * @method array commerce_listArticleGroupsOfStore(?Query $query, string $storeId)
+ * @method array commerce_listProductGroupsOfCatalogue(?Query $query, string $storeId, string $catalogueId)
+ * @method array commerce_listCataloguesOfStore(?Query $query, string $storeId)
+ * @method array commerce_listStores(?Query $query)
+ * @method array customer_listPosAroundCoordinate(Query $query);
+ * @method array dossier_getAttachmentsOfDossier(?Query $query, string $dossierId);
  */
 final class ApiClient
 {

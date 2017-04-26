@@ -6,7 +6,7 @@ $query     = $params[0] ?? \HF\ApiClient\Query\Query::create();
 $dossierId = $params[1] ?? null;
 
 if (! $dossierId) {
-    throw new \Exception('must give dossierId');
+    throw new \Exception('You must provide a dossierId');
 }
 
 return [

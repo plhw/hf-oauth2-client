@@ -44,10 +44,27 @@ $options = Options::fromArray(include('.hf-api-client-secrets.php'));
 
 $api = ApiClient::createClient($options, $cache);
 
-$query = \HF\ApiClient\Query\Query::create();
-
 try {
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withFilter('query', 'shop.PLHW')
+        ->withPage(1, 1);
+
     $results = $api->commerce_listStores($query);
+    $storeId = $results['data'][0]['id'] ?? '';
+
+    // now we search for a specific catalogue within that store
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withFilter('query', 'Sandalinos Catalogue')
+        ->withIncluded('productGroups')
+        ->withPage(1, 1);
+
+    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
+
+    $catalogueId = $results['data'][0]['id'] ?? '';
+    // pick a random articleGroupId from the included (just for demo)
+    $randomProductGroupId = array_rand(array_flip(array_column($results['included'], 'id')));
+
+    $results = $api->commerce_getProductGroupOfCatalogue(null, $storeId, $catalogueId, $randomProductGroupId);
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
 } catch (\HF\ApiClient\Exception\GatewayException $e) {
@@ -57,33 +74,11 @@ try {
 }
 
 if ($api->isSuccess() && $results) {
-    foreach ($results['data'] as $result) {
-        printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],
-            $result['attributes']['description']);
-
-        foreach ($result['relationships']['article_groups']['data'] as $rel) {
-            try {
-                $results = $api->commerce_getArticleGroup($rel['id']);
-
-                if ($api->isSuccess() && $results) {
-                    printf(
-                        "ArticleGroup %s : %s (%s:%s)\n",
-                        $results['data']['id'],
-                        $results['data']['attributes']['description'],
-                        $results['data']['attributes']['ledger_number'],
-                        $results['data']['attributes']['code']
-                    );
-                } else {
-                    printf("Error (%d)\n", $api->getStatusCode());
-                    print_r($results);
-                }
-            } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-                die($e->getMessage());
-            } catch (\Exception $e) {
-                die($e->getMessage());
-            }
-        }
-    }
+    $result = $results['data'];
+    printf("ProductGroup %s : %s (%s)\n",
+        $result['id'], $result['attributes']['description'],
+        $result['attributes']['code']
+    );
 } else {
     printf("Error (%d)\n", $api->getStatusCode());
     print_r($results);

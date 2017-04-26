@@ -11,6 +11,8 @@ $autoloadFiles = [
     __DIR__ . '/vendor/autoload.php',
 ];
 
+chdir(__DIR__ . '/..');
+
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
         chdir(dirname($autoloadFile) . '/..');
@@ -33,7 +35,6 @@ $cache = StorageFactory::factory([
         'options' => [
             'cache_dir' => './data/cache',
             'dir_level' => 0,
-            'namespace' => 'a',
         ],
     ],
     'plugins' => ['serializer'],
@@ -43,15 +44,31 @@ $options = Options::fromArray(include('.hf-api-client-secrets.php'));
 
 $api = ApiClient::createClient($options, $cache);
 
-$query = \HF\ApiClient\Query\Query::create()
-    ->withFilter('around', '52.3629882,4.8593175')
-    ->withFilter('distance', 50000)
-    ->withFilter('product', 'insoles')
-    ->withPage(1, 3)
-    ->withSort('name', false);
-
 try {
-    $results = $api->customer_posAroundCoordinate($query);
+    // we must get a storeId and a catalogueId, which is different per environment.
+    // as an example i'll show how you can do a search by name
+
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withFilter('query', 'shop.PLHW')
+        ->withPage(1, 1);
+
+    $results = $api->commerce_listStores($query);
+    $storeId = $results['data'][0]['id'] ?? '';
+
+    // now we search for a specific catalogue within that store
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withFilter('query', 'Sandalinos Catalogue')
+        ->withPage(1, 1);
+
+    $results     = $api->commerce_listCataloguesOfStore($query, $storeId);
+    $catalogueId = $results['data'][0]['id'] ?? '';
+
+    // once we have the storeId and the catalogue id, we can get list the product groups
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withSort('code', true)
+        ->withPage(1, 1000);
+
+    $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
 } catch (\HF\ApiClient\Exception\GatewayException $e) {
@@ -60,11 +77,13 @@ try {
     die();
 }
 
-if ($api->isSuccess()) {
+if ($api->isSuccess() && $results) {
     foreach ($results['data'] as $result) {
-        printf("Practice %s on %skm\n", $result['attributes']['name'],
-            round(($result['attributes']['distance'] / 100)) / 10);
-        printf(" - sells %s\n", implode(', ', $result['attributes']['products']));
+        printf("ProductGroup %s : %s (%s)\n",
+            $result['id'],
+            $result['attributes']['description'],
+            $result['attributes']['code']
+            );
     }
 } else {
     printf("Error (%d)\n", $api->getStatusCode());

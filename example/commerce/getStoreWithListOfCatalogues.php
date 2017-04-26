@@ -45,7 +45,11 @@ $options = Options::fromArray(include('.hf-api-client-secrets.php'));
 $api = ApiClient::createClient($options, $cache);
 
 try {
-    $results = $api->commerce_listArticleGroups();
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withIncluded('catalogues')
+        ->withPage(1, 1);
+
+    $results = $api->commerce_getStore($query, 'a0713068-8c35-51da-b578-a3cce5978221');
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
 } catch (\HF\ApiClient\Exception\GatewayException $e) {
@@ -55,23 +59,22 @@ try {
 }
 
 if ($api->isSuccess() && $results) {
-    foreach ($results['data'] as $result) {
-        printf("ArticleGroup %s : %s (%s)\n", $result['id'], $result['attributes']['description'], $result['attributes']['code']);
-    }
-} else {
-    printf("Error (%d)\n", $api->getStatusCode());
-    print_r($results);
-}
+    $result = $results['data'];
+    printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],
+        $result['attributes']['description']);
 
-try {
-    $results = $api->commerce_getArticleGroup('fc7d0810-cc77-5c90-bea4-b92f6115a8a9');
-} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-    die($e->getMessage());
-} catch (\Exception $e) {
-    die($e->getMessage());
-}
-if ($api->isSuccess()) {
-    print_r($results);
+    foreach ($result['relationships']['catalogues']['data'] as $rel) {
+        foreach ($results['included'] as $include) {
+            if ($include['id'] === $rel['id']) {
+                printf(
+                    "Catalogue %s : %s (%s)\n",
+                    $include['id'],
+                    $include['attributes']['name'],
+                    $include['attributes']['description']
+                );
+            }
+        }
+    }
 } else {
     printf("Error (%d)\n", $api->getStatusCode());
     print_r($results);

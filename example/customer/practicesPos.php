@@ -33,6 +33,7 @@ $cache = StorageFactory::factory([
         'options' => [
             'cache_dir' => './data/cache',
             'dir_level' => 0,
+            'namespace' => 'a',
         ],
     ],
     'plugins' => ['serializer'],
@@ -50,7 +51,7 @@ $query = \HF\ApiClient\Query\Query::create()
     ->withSort('name', false);
 
 try {
-    $results = $api->dossier_attachmentsOfDossier($query, 'a652e443-ba3f-5841-936c-b6be5c5a2800');
+    $results = $api->customer_listPosAroundCoordinate($query);
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
     die($e->getMessage());
 } catch (\HF\ApiClient\Exception\GatewayException $e) {
@@ -61,7 +62,9 @@ try {
 
 if ($api->isSuccess()) {
     foreach ($results['data'] as $result) {
-        print_r($result);
+        printf("Practice %s on %skm\n", $result['attributes']['name'],
+            round(($result['attributes']['distance'] / 100)) / 10);
+        printf(" - sells %s\n", implode(', ', $result['attributes']['products']));
     }
 } else {
     printf("Error (%d)\n", $api->getStatusCode());

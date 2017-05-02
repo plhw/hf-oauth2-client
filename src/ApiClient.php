@@ -33,6 +33,7 @@ use ZendService\Api\Api;
  *
  * @method array commerce_getArticleGroupOfStore(?Query $query, string $storeId, string $articleGroupId)
  * @method array commerce_getProductGroupOfCatalogue(?Query $query, string $storeId, string $catalogueId, string $productGroupId)
+ * @method array commerce_getProductOfProductGroup(?Query $query, string $storeId, string $catalogueId, string $productGroupId, string $productId)
  * @method array commerce_getStore(Query $query, string $storeId)
  * @method array commerce_listArticleGroupsOfStore(?Query $query, string $storeId)
  * @method array commerce_listProductGroupsOfCatalogue(?Query $query, string $storeId, string $catalogueId)

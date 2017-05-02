@@ -36,6 +36,7 @@ use ZendService\Api\Api;
  * @method array commerce_getStore(Query $query, string $storeId)
  * @method array commerce_listArticleGroupsOfStore(?Query $query, string $storeId)
  * @method array commerce_listProductGroupsOfCatalogue(?Query $query, string $storeId, string $catalogueId)
+ * @method array commerce_listProductsOfProductGroup(?Query $query, string $storeId, string $catalogueId, string $productGroupId)
  * @method array commerce_listCataloguesOfStore(?Query $query, string $storeId)
  * @method array commerce_listStores(?Query $query)
  * @method array customer_listPosAroundCoordinate(Query $query);

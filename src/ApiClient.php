@@ -26,6 +26,7 @@ use League\OAuth2\Client\Token\AccessToken;
 use Zend\Cache\Storage\StorageInterface;
 use Zend\Cache\StorageFactory;
 use Zend\Http\Headers;
+use Zend\Stdlib\ArrayUtils;
 use ZendService\Api\Api;
 
 /**
@@ -64,6 +65,36 @@ final class ApiClient
      * @var StorageInterface
      */
     private $cache;
+
+    /**
+     * Contains a nested array with the attributes of each loaded resource
+     *
+     * example:
+     *
+     * $api->cachedResources = [
+     *     'commerce/product' => [
+     *         '4a26bcb4-4a8d-5bdf-aa91-7d89599f886c' => [
+     *             "code"        => "CheyenneM38/40",
+     *             "description" => "Schacht Cheyenne M38/40",
+     *         ],
+     *         '4c5a6a46-f3eb-5085-b3fb-f1d8439750d2' => [
+     *             "code"        => "YassinM45/48",
+     *             "description" => "Schacht Yassin M45/48",
+     *         ],
+     *     ],
+     *     'commerce/product-attribute-value' => [
+     *         'e906af07-a1dd-5429-aab5-28598642b645' => [
+     *             "value"        => "Yassin",
+     *         ],
+     *         'b365d65f-b2e6-503d-9c11-3e9e9a391f0d' => [
+     *             "value"        => "F",
+     *         ],
+     *     ],
+     * ];
+     *
+     * @var array
+     */
+    public $cachedResources = [];
 
     /**
      * @var AccessToken
@@ -135,6 +166,29 @@ final class ApiClient
             }
         }
 
+
+        if (isset($result['data'])) {
+            if (isset($result['data']['id'])) {
+                $resources = [$result['data']];
+            } else {
+                $resources = $result['data'];
+            }
+
+            foreach ($resources as $resource) {
+                $cachedResource                                            = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
+                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource['attributes']);
+                $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
+            }
+        }
+
+        if (isset($result['included'])) {
+            foreach ($result['included'] as $resource) {
+                $cachedResource                                            = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
+                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource['attributes']);
+                $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
+            }
+        }
+
         return $result;
     }
 
@@ -156,7 +210,8 @@ final class ApiClient
     private function getAccessToken(
         string $grant,
         string $scope
-    ): ?AccessToken {
+    ): ?AccessToken
+    {
         if ($this->accessToken === null || $this->accessToken->hasExpired()) {
             $provider = $this->createOAuth2Provider();
 

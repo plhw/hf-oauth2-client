@@ -15,6 +15,7 @@ if (! $catalogueId) {
 return [
     'url'      => sprintf('/commerce/stores/%s/catalogues/%s/product-groups%s', $storeId, $catalogueId, (string) $query),
     'method'   => 'GET',
+    'header'   => $query->headers(),
     'response' => [
         'format'      => 'json',
         'valid_codes' => ['200'],

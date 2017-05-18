@@ -14,11 +14,12 @@
     "sort-packages":       true
   },
   "require":      {
-    "php":                           "^7.0",
-    "beberlei/assert":               "^2.7",
-    "league/oauth2-client":          "^2.2",
-    "roave/security-advisories":     "dev-master",
-    "zendframework/zend-cache":      "^2.7",
+    "php": "^7.0",
+    "beberlei/assert": "^2.7",
+    "league/oauth2-client": "^2.2",
+    "ocramius/package-versions": "^1.1",
+    "roave/security-advisories": "dev-master",
+    "zendframework/zend-cache": "^2.7",
     "zendframework/zend-serializer": "^2.8",
     "zendframework/zendservice-api": "^2.0"
   },

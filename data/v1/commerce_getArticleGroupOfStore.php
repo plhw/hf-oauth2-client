@@ -17,6 +17,7 @@ if (! $articleGroupId) {
 return [
     'url'      => sprintf('/commerce/stores/%s/article-groups/%s%s', $storeId, $articleGroupId, $query),
     'method'   => 'GET',
+    'header'   => $query->headers(),
     'response' => [
         'format' => 'json',
         'valid_codes' => ['200'],

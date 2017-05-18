@@ -12,6 +12,7 @@ if (! $dossierId) {
 return [
     'url'      => sprintf('/dossier/dossiers/%s/attachments%s', $dossierId, $query),
     'method'   => 'GET',
+    'header'   => $query->headers(),
     'response' => [
         'format'      => 'json',
         'valid_codes' => ['200'],

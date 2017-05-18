@@ -18,6 +18,9 @@ declare(strict_types=1);
 namespace HF\ApiClient\Query;
 
 use Assert\Assertion;
+use PackageVersions\Versions;
+use Zend\Http\Header\AcceptLanguage;
+use Zend\Http\Header\UserAgent;
 
 class Query
 {
@@ -25,6 +28,11 @@ class Query
     private $page    = [];
     private $include = [];
     private $sort    = [];
+    private $headers = [
+        "Accept" => "application/json",
+    ];
+
+    public static $language = 'nl';
 
     private function __construct()
     {
@@ -116,5 +124,33 @@ class Query
     public function __toString(): string
     {
         return $this->constructQuery();
+    }
+
+    public function headers(): array
+    {
+        $al        = new AcceptLanguage();
+        $languages = ['nl', 'en'];
+
+        if (in_array(self::$language, $languages, true)) {
+            // move to front to priorize
+            $pos = array_search(self::$language, $languages);
+
+            array_splice($languages, $pos, 1);
+        }
+
+        // simple prepend
+        array_unshift($languages, self::$language);
+
+        foreach ($languages as $key => $language) {
+            $al->addLanguage($language, 1 - (($key + .1) / count($languages)));
+        }
+
+
+        $ua = new UserAgent(sprintf('PLHW Api Client \'%s\'', Versions::getVersion('plhw/hf-api-client')));
+
+        $this->headers[$ua->getFieldName()] = $ua->getFieldValue();
+        $this->headers[$al->getFieldName()] = $al->getFieldValue();
+
+        return $this->headers;
     }
 }

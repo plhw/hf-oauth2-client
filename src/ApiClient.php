@@ -67,7 +67,7 @@ final class ApiClient
     private $cache;
 
     /**
-     * Contains a nested array with the attributes of each loaded resource
+     * Contains a nested array with the attributes of each loaded resource.
      *
      * example:
      *
@@ -166,7 +166,6 @@ final class ApiClient
             }
         }
 
-
         if (isset($result['data'])) {
             if (isset($result['data']['id'])) {
                 $resources = [$result['data']];
@@ -210,8 +209,7 @@ final class ApiClient
     private function getAccessToken(
         string $grant,
         string $scope
-    ): ?AccessToken
-    {
+    ): ?AccessToken {
         if ($this->accessToken === null || $this->accessToken->hasExpired()) {
             $provider = $this->createOAuth2Provider();
 

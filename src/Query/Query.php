@@ -45,7 +45,7 @@ class Query
 
     public function withFilter(string $property, $value): Query
     {
-        if (!is_scalar($value) && !is_array($value)) {
+        if (! is_scalar($value) && ! is_array($value)) {
             throw new \UnexpectedValueException('Value must be scalar or array');
         }
 
@@ -60,6 +60,17 @@ class Query
         return $query;
     }
 
+    public function withoutFilter(string $property): Query
+    {
+        $query = clone $this;
+
+        if (isset($query->filter[$property])) {
+            unset($query->filter[$property]);
+        }
+
+        return $query;
+    }
+    
     public function withSort(string $property, bool $ascending = true): Query
     {
         $query = clone $this;

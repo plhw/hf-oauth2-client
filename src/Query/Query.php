@@ -43,9 +43,11 @@ class Query
         return new static();
     }
 
-    public function withFilter(string $property, $value = null): Query
+    public function withFilter(string $property, $value): Query
     {
-        Assertion::scalar($value);
+        if (!is_scalar($value) && !is_array($value)) {
+            throw new \UnexpectedValueException('Value must be scalar or array');
+        }
 
         $query = clone $this;
 

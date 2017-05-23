@@ -32,6 +32,7 @@ use ZendService\Api\Api;
 /**
  * Class ApiClient.
  *
+ * @method array commerce_submitSandalinosComposition(Query $query, string $storeId)
  * @method array commerce_getArticleGroupOfStore(?Query $query, string $storeId, string $articleGroupId)
  * @method array commerce_getProductGroupOfCatalogue(?Query $query, string $storeId, string $catalogueId, string $productGroupId)
  * @method array commerce_getProductOfProductGroup(?Query $query, string $storeId, string $catalogueId, string $productGroupId, string $productId)
@@ -158,7 +159,7 @@ final class ApiClient
         }
 
         if (! $this->api->isSuccess()) {
-            if ($result['error'] === 'invalid_token') {
+            if (@$result['error'] === 'invalid_token') {
                 $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
 
                 // call again
@@ -175,7 +176,8 @@ final class ApiClient
 
             foreach ($resources as $resource) {
                 $cachedResource                                            = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
-                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource['attributes']);
+                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource);
+                unset($cachedResource['id'], $cachedResource['type']);
                 $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
             }
         }
@@ -183,7 +185,8 @@ final class ApiClient
         if (isset($result['included'])) {
             foreach ($result['included'] as $resource) {
                 $cachedResource                                            = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
-                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource['attributes']);
+                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource);
+                unset($cachedResource['id'], $cachedResource['type']);
                 $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
             }
         }

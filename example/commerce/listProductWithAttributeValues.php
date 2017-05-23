@@ -29,7 +29,7 @@ try {
     $catalogueId = $results['data'][0]['id'] ?? '';
 
     $query = Query::create()
-        ->withFilter('code', 'SND')// sandlinso custome made groep!
+        ->withFilter('code', 'SND')// sandlinos custom made groep!
         ->withPage(1, 1);
 
     $results        = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
@@ -57,10 +57,10 @@ if ($api->isSuccess() && $results) {
             $result['attributes']['code']
         );
 
-        $attributeValues= $result['relationships']['attribute_values']['data'] ?? [];
+        $attributeValues = $result['relationships']['attribute_values']['data'] ?? [];
 
-        foreach ($attributeValues as $attributeValue) {
-            printf(" attributeValue : %s\n", $api->cachedResources[$attributeValue['type']][$attributeValue['id']]['value']);
+        foreach ($attributeValues as ['type' => $type, 'id' => $id]) {
+            printf(" attributeValue : %s\n", $api->cachedResources[$type][$id]['value']);
         }
     }
 } else {

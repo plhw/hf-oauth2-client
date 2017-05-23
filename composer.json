@@ -24,7 +24,8 @@
     "zendframework/zendservice-api": "^2.0"
   },
   "require-dev":  {
-    "malukenho/docheader":     "^0.1",
+    "doctrine/common": "^2.7",
+    "malukenho/docheader": "^0.1",
     "plhw/hf-cs-fixer-config": "^1.0"
   },
   "autoload":     {

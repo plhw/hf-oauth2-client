@@ -28,8 +28,9 @@ class Query
     private $page    = [];
     private $include = [];
     private $sort    = [];
+    private $other   = [];
     private $headers = [
-        "Accept" => "application/json",
+        'Accept' => 'application/json',
     ];
 
     public static $language = 'nl';
@@ -43,6 +44,19 @@ class Query
         return new static();
     }
 
+    public function withParam(string $property, $value): Query
+    {
+        if (! is_scalar($value) && ! is_array($value)) {
+            throw new \UnexpectedValueException('Value must be scalar or array');
+        }
+
+        $query = clone $this;
+
+        $query->other[$property] = $value;
+
+        return $query;
+    }
+
     public function withFilter(string $property, $value): Query
     {
         if (! is_scalar($value) && ! is_array($value)) {
@@ -51,11 +65,7 @@ class Query
 
         $query = clone $this;
 
-        if ($value === null) {
-            unset($query->filter[$property]);
-        } else {
-            $query->filter[$property] = $value;
-        }
+        $query->filter[$property] = $value;
 
         return $query;
     }
@@ -70,7 +80,7 @@ class Query
 
         return $query;
     }
-    
+
     public function withSort(string $property, bool $ascending = true): Query
     {
         $query = clone $this;
@@ -113,6 +123,12 @@ class Query
     {
         $query = [];
 
+        // set 'other' first
+        if (! empty($this->other)) {
+            foreach ($this->other as $key => $value) {
+                $query[$key] = $value;
+            }
+        }
         if (! empty($this->filter)) {
             $query['filter'] = $this->filter;
         }
@@ -157,7 +173,6 @@ class Query
         foreach ($languages as $key => $language) {
             $al->addLanguage($language, 1 - (($key + .1) / count($languages)));
         }
-
 
         $ua = new UserAgent(sprintf('PLHW Api Client \'%s\'', Versions::getVersion('plhw/hf-api-client')));
 

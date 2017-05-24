@@ -40,7 +40,7 @@ try {
         Query::create()
             ->withParam('name', 'Some One')
             ->withParam('email', 'someone@example.com')
-            ->withParam('locality', '52.3629882,4.8593175')
+            ->withParam('locality', 'Kalverstraat 1, Amsterdam, NL')
             ->withParam('composition', [
                 'model' => 'lotus-2016',
                 'parts' => [

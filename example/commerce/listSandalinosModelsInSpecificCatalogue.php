@@ -129,7 +129,20 @@ try {
 
         // loop over the loaded product(s)
         foreach ($results['data'] as $product) {
-            printf("- %s (%s)\n", $product['attributes']['description'], $product['attributes']['code']);
+
+            if (null !== $product['attributes']['sales_price']) {
+                // money comes in as cents; eg. '999 EUR' for €9.99
+                $amount = explode(' ', $product['attributes']['sales_price'])[0];
+
+                // so it must be divided by a hundred
+                $amount /= 100;
+
+                $salesPrice = sprintf('€%01.2f', $amount);
+            } else { // no price available?
+                $salesPrice = 'n/a';
+            }
+
+            printf("- %s (%s) %s\n", $product['attributes']['description'], $product['attributes']['code'], $salesPrice);
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop

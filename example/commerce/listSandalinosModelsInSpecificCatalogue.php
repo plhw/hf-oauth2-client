@@ -16,7 +16,7 @@ try {
      *
      * Since we have a cache setup (via '../setup.php' we will use that
      */
-    $cacheKey = 'id-key';
+    $cacheKey = sha1('id-key');
 
     // try to get $storeId, $catalogueId from the cache
     @list(
@@ -129,7 +129,6 @@ try {
 
         // loop over the loaded product(s)
         foreach ($results['data'] as $product) {
-
             if (null !== $product['attributes']['sales_price']) {
                 // money comes in as cents; eg. '999 EUR' for €9.99
                 $amount = explode(' ', $product['attributes']['sales_price'])[0];

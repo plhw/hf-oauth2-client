@@ -26,7 +26,7 @@ try {
     $catalogueId = $results['data'][0]['id'] ?? '';
 
     $query = Query::create()
-        ->withFilter('code', 'B')// bekleding!
+        ->withFilter('code', 'SND:B')// bekleding!
         ->withPage(1, 1);
 
     $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);

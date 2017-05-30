@@ -28,21 +28,24 @@ if (! file_exists('.hf-api-client-secrets.php')) {
     die('copy example/.hf-api-client-secrets.php.dist to APP_ROOT/.hf-api-client-secrets.php');
 }
 
+$options = Options::fromArray(include('.hf-api-client-secrets.php'));
+
+$cacheOptions = [
+    'namespace' => sha1($options->getClientId() . $options->getScope()),
+    'dir_level' => 0,
+];
+
+if (is_dir('./data/cache')) {
+    $cacheOptions['cache_dir'] = './data/cache';
+}
+
 // optional but will then use filesystem default tmp directory
 $cache = StorageFactory::factory([
     'adapter' => [
         'name'    => 'filesystem',
-        'options' => [
-            'dir_level' => 0,
-        ],
+        'options' => $cacheOptions,
     ],
     'plugins' => ['serializer'],
 ]);
-
-if (is_dir('./data/cache')) {
-    $cache->setOptions(['cache_dir' => './data/cache',]);
-}
-
-$options = Options::fromArray(include('.hf-api-client-secrets.php'));
 
 $api = ApiClient::createClient($options, $cache);

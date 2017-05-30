@@ -29,10 +29,11 @@ try {
     $catalogueId = $results['data'][0]['id'] ?? '';
 
     $query = Query::create()
-        ->withFilter('code', 'B') // bekleding!
+        ->withFilter('code', 'SND:B') // bekleding!
         ->withPage(1, 1);
 
     $results        = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
+
     $productGroupId = $results['data'][0]['id'] ?? '';
 
     // once we have the storeId and the catalogue id, we can get list the product groups

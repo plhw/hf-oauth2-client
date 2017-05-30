@@ -106,3 +106,12 @@ Your client side application should communicate via a proxy to our server.
 7.  data             <- response <-    data
 
 ```
+
+
+
+
+Run all examples in the 'commerce' domain:
+
+```
+find ./example/commerce/ -maxdepth 1 -type f -exec {} \;
+```

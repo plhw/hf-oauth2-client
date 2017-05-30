@@ -33,12 +33,15 @@ $cache = StorageFactory::factory([
     'adapter' => [
         'name'    => 'filesystem',
         'options' => [
-            'cache_dir' => './data/cache',
             'dir_level' => 0,
         ],
     ],
     'plugins' => ['serializer'],
 ]);
+
+if (is_dir('./data/cache')) {
+    $cache->setOptions(['cache_dir' => './data/cache',]);
+}
 
 $options = Options::fromArray(include('.hf-api-client-secrets.php'));
 

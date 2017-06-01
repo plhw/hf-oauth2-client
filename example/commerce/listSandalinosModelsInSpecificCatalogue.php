@@ -149,12 +149,10 @@ try {
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop
             if (isset($product['relationships']['assigned_values'])) {
-
                 foreach ($product['relationships']['assigned_values']['data'] as ['type' => $type, 'id' => $id]) {
 
                     // get assigned value resource
                     $assignedValue = $api->cachedResources[$type][$id];
-
 
                     if (isset($assignedValue['relationships']['attribute'])) {
                         // a one-2-one relationship exists between an assignedValue and an attribute resource, therefore type and id

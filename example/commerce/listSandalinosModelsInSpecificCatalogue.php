@@ -117,8 +117,11 @@ try {
      */
     $results = $api->commerce_listProductsOfProductGroup(
         $query = Query::create()
-            ->withFilter('assignedValue', ['gender' => 'female'])
-            ->withIncluded('assignedValues.attribute'),
+            ->withFilter('assignedValues', [
+                ['attributeCode' => 'gender', 'value' => 'female'],
+                ['attributeCode' => 'model', 'available' => true],
+            ])
+            ->withIncluded('assignedValues'),
         $storeId,
         $catalogueId,
         $sndProductGroupId
@@ -145,25 +148,31 @@ try {
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop
-            foreach ($product['relationships']['assigned_values']['data'] as ['type' => $type, 'id' => $id]) {
+            if (isset($product['relationships']['assigned_values'])) {
 
-                // get assigned value resource
-                $assignedValue = $api->cachedResources[$type][$id];
+                foreach ($product['relationships']['assigned_values']['data'] as ['type' => $type, 'id' => $id]) {
 
-                // a one-2-one relationship exists between an assignedValue and an attribute resource, therefore type and id
-                // extraction is a little different (not an array)
-                ['type' => $type, 'id' => $id] = $assignedValue['relationships']['attribute']['data'];
+                    // get assigned value resource
+                    $assignedValue = $api->cachedResources[$type][$id];
 
-                // get assigned value attribute resource
-                $attribute = $api->cachedResources[$type][$id];
 
-                printf(
-                    " - ATTR: %s (%s) %s (%s)\n",
-                    $attribute['attributes']['label'],
-                    $attribute['attributes']['code'],
-                    $assignedValue['attributes']['label'],
-                    $assignedValue['attributes']['value']
-                );
+                    if (isset($assignedValue['relationships']['attribute'])) {
+                        // a one-2-one relationship exists between an assignedValue and an attribute resource, therefore type and id
+                        // extraction is a little different (not an array)
+                        ['type' => $type, 'id' => $id] = $assignedValue['relationships']['attribute']['data'];
+
+                        // get assigned value attribute resource
+                        $attribute = $api->cachedResources[$type][$id];
+
+                        printf(
+                            " - ATTR: %s (%s) %s (%s)\n",
+                            $attribute['attributes']['label'],
+                            $attribute['attributes']['code'],
+                            $assignedValue['attributes']['label'],
+                            $assignedValue['attributes']['value']
+                        );
+                    }
+                }
             }
         }
     } else {
@@ -178,10 +187,12 @@ try {
      */
     $results = $api->commerce_listProductsOfProductGroup(
         $query = Query::create()
-            ->withFilter('assignedValue', ['model' => 'lotus-2016'])
+            ->withFilter('assignedValues', [
+                ['attributeCode' => 'model', 'value' => 'lotus-2016'],
+            ])
             ->withIncluded('assignedValues.attribute.attributeValues')
-            ->withSort('assignedValues.ordinality', false)
-            ->withSort('assignedAttributes.ordinality', false),
+            ->withSort('assignedValue.ordinality', false),
+//            ->withSort('assignedAttributes.ordinality', true),
         $storeId,
         $catalogueId,
         $sndShaftsProductGroupId

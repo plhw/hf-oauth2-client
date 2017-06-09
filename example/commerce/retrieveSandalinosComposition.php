@@ -32,17 +32,13 @@ try {
         ]);
     }
 
-    printf("We have collected these id's to work with '%s'\n\n", implode("', '", [
-        $storeId,
-    ]));
-
     $result = $api->commerce_retrieveSandalinosCompositionByCode(
         Query::create()
-            ->withParam('code', 'Sandalinos'),
+            ->withParam('code', 'DlILiAnL'),
         $storeId
     );
 
-    if ($api->isSuccess()) {
+    if ($result && $api->isSuccess()) {
         print_r($result);
     } else {
         print_r($api->getLastResponseBody());

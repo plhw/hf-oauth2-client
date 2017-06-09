@@ -121,7 +121,8 @@ try {
                 ['attributeCode' => 'gender', 'value' => 'female'],
                 ['attributeCode' => 'model', 'available' => true],
             ])
-            ->withIncluded('assignedValues'),
+            ->withIncluded('assignedValues.attribute')
+            ->withSort('code', true),
         $storeId,
         $catalogueId,
         $sndProductGroupId
@@ -183,14 +184,21 @@ try {
      *
      * Since we now have the correct id's we'll be able to query 'products' linked to that ProductGroup
      */
+    $query = \HF\ApiClient\Query\Query::create()
+        ->withFilter('assignedValues', [
+        ])
+        ->withIncluded('assignedValues.attribute');
+
+
     $results = $api->commerce_listProductsOfProductGroup(
         $query = Query::create()
             ->withFilter('assignedValues', [
-                ['attributeCode' => 'model', 'value' => 'lotus-2016'],
+                ['attributeCode' => 'model', 'value' => 'anna', 'available' => true],
+                ['attributeCode' => 'color', 'available' => true],
+                ['attributeCode' => 'material', 'available' => true],
             ])
-            ->withIncluded('assignedValues.attribute.attributeValues')
-            ->withSort('assignedValue.ordinality', false),
-//            ->withSort('assignedAttributes.ordinality', true),
+            ->withIncluded('assignedValues.attribute')
+            ->withSort('code', true),
         $storeId,
         $catalogueId,
         $sndShaftsProductGroupId
@@ -200,8 +208,8 @@ try {
         printf("\nPRODUCT VARIANTS FOR MODEL\n\n");
 
         // loop over the loaded product(s)
-        foreach ($results['data'] as $product) {
-            printf("- %s (%s)\n", $product['attributes']['description'], $product['attributes']['code']);
+        foreach ($results['data'] as $key=>$product) {
+            printf("- %s (%s) (%s)\n", $product['attributes']['description'], $product['attributes']['code'], $key + 1);
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop

@@ -46,7 +46,7 @@ try {
                 'parts' => [
                     'SND:S:lotus-2016.G.001', // Shaft Lotus-2016 Smooth leather Black
                     'SND:B:NONE.NONE',        // Cover None
-                    'SND:V:A.000',            // Footbed Alcatara White
+                    'SND:VB:E.000',           // Footbed Eva White
                     'SND:TZ:NONE.NONE',       // Midsole None
                     'SND:LZ:AS.001',          // Outsole Astro Zwart
                 ],

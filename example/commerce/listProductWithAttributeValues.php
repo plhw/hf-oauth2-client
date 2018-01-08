@@ -37,7 +37,7 @@ try {
 
     // once we have the storeId and the catalogue id, we can get list the product groups
     $query   = Query::create();
-    $query   = $query->withIncluded('attributeValues');
+    $query   = $query->withIncluded('assignedValues');
     $results = $api->commerce_listProductsOfProductGroup($query, $storeId, $catalogueId, $productGroupId);
 
     // this is new and is an cache of loaded resources, by type and id.
@@ -57,10 +57,10 @@ if ($api->isSuccess() && $results) {
             $result['attributes']['code']
         );
 
-        $attributeValues = $result['relationships']['attribute_values']['data'] ?? [];
+        $attributeValues = $result['relationships']['assigned_values']['data'] ?? [];
 
         foreach ($attributeValues as ['type' => $type, 'id' => $id]) {
-            printf(" attributeValue : %s\n", $api->cachedResources[$type][$id]['value']);
+            printf(" %-15s: %s\n", $api->cachedResources[$type][$id]['attributes']['attribute_code'] ?? 'n/a', $api->cachedResources[$type][$id]['attributes']['value'] ?? 'n/a');
         }
     }
 } else {

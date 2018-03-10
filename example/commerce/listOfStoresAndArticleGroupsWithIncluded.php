@@ -35,7 +35,7 @@ if ($api->isSuccess() && $results) {
                         "ArticleGroup %s : %s (%s:%s)\n",
                         $include['id'],
                         $include['attributes']['description'],
-                        $include['attributes']['ledger_number'],
+                        $include['attributes']['ledger-number'],
                         $include['attributes']['code']
                     );
                 }

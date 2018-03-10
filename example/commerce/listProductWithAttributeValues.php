@@ -60,7 +60,7 @@ if ($api->isSuccess() && $results) {
         $attributeValues = $result['relationships']['assigned_values']['data'] ?? [];
 
         foreach ($attributeValues as ['type' => $type, 'id' => $id]) {
-            printf(" %-15s: %s\n", $api->cachedResources[$type][$id]['attributes']['attribute_code'] ?? 'n/a', $api->cachedResources[$type][$id]['attributes']['value'] ?? 'n/a');
+            printf(" %-15s: %s\n", $api->cachedResources[$type][$id]['attributes']['attribute-code'] ?? 'n/a', $api->cachedResources[$type][$id]['attributes']['value'] ?? 'n/a');
         }
     }
 } else {

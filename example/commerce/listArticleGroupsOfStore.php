@@ -37,7 +37,7 @@ if ($api->isSuccess() && $results) {
         printf("ArticleGroup %s : %s (%s: %s)\n",
             $result['id'],
             $result['attributes']['description'],
-            $result['attributes']['ledger_number'],
+            $result['attributes']['ledger-number'],
             $result['attributes']['code']
             );
     }

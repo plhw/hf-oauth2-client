@@ -133,9 +133,9 @@ try {
 
         // loop over the loaded product(s)
         foreach ($results['data'] as $product) {
-            if (null !== $product['attributes']['sales_price']) {
+            if (null !== $product['attributes']['sales-price']) {
                 // money comes in as cents; eg. '999 EUR' for €9.99
-                $amount = explode(' ', $product['attributes']['sales_price'])[0];
+                $amount = explode(' ', $product['attributes']['sales-price'])[0];
 
                 // so it must be divided by a hundred
                 $amount /= 100;

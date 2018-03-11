@@ -20,6 +20,10 @@ try {
     // try to get $storeId, $catalogueId from the cache
     @list($storeId) = $cache->getItem($cacheKey, $success);
 
+    if (!($argv[1] ?? false)) {
+      die('Give snd code as argument');
+    }
+
     if (($storeId === null) || ! $success) {
         $storeQueryResult = $api->commerce_listStores(
             Query::create()->withFilter('query', 'shop.PLHW')->withPage(1, 1)
@@ -34,7 +38,7 @@ try {
 
     $result = $api->commerce_retrieveSandalinosCompositionByCode(
         Query::create()
-            ->withParam('code', 'DlILiAnL'),
+            ->withParam('code', $argv[1]),
         $storeId
     );
 

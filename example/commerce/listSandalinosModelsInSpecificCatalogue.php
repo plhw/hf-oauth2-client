@@ -44,42 +44,42 @@ try {
         $catalogueId = $catalogueQueryResult['data'][0]['id'] ?? '';
 
         $sndProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'SND')->withPage(1, 1),
+            $query = Query::create()->withFilter('code', 'S:CM')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
         $sndProductGroupId          = $sndProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndShaftsProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'SND:S')->withPage(1, 1),
+            $query = Query::create()->withFilter('code', 'S:CM:SH')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
         $sndShaftsProductGroupId          = $sndShaftsProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndCoverProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'SND:B')->withPage(1, 1),
+            $query = Query::create()->withFilter('code', 'S:CM:CV')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
         $sndCoverProductGroupId          = $sndCoverProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndFootbedProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'SND:F')->withPage(1, 1),
+            $query = Query::create()->withFilter('code', 'S:CM:FB')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
         $sndFootbedProductGroupId          = $sndFootbedProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndMidsoleProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'SND:TZ')->withPage(1, 1),
+            $query = Query::create()->withFilter('code', 'S:CM:MS')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
         $sndMidsoleProductGroupId          = $sndMidsoleProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndOutsoleProductGroupId = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'SND:LZ')->withPage(1, 1),
+            $query = Query::create()->withFilter('code', 'S:CM:OS')->withPage(1, 1),
             $storeId,
             $catalogueId
         );

@@ -12,7 +12,7 @@ require_once __DIR__ . '/../setup.php';
 $query = Query::create()
     ->withFilter('around', '52.3629882,4.8593175')
     ->withFilter('distance', 50000)
-    ->withFilter('product', 'insoles')
+    ->withFilter('product', 'sandalinos')
     ->withPage(1, 3)
     ->withSort('name', false);
 

@@ -44,11 +44,11 @@ try {
             ->withParam('composition', [
                 'model' => 'lotus-2016',
                 'parts' => [
-                    'SND:S:lotus-2016.G.001', // Shaft Lotus-2016 Smooth leather Black
-                    'SND:B:NONE.NONE',        // Cover None
-                    'SND:VB:E.000',           // Footbed Eva White
-                    'SND:TZ:NONE.NONE',       // Midsole None
-                    'SND:LZ:AS.001',          // Outsole Astro Zwart
+                    'S:CM:SH:lotus-2016.G.001', // Shaft Lotus-2016 Smooth leather Black
+                    'S:CM:CV:NONE.NONE',        // Cover None
+                    'S:CM:FB:E.000',           // Footbed Eva White
+                    'S:CM:MS:NONE.NONE',       // Midsole None
+                    'S:CM:OS:AS.001',          // Outsole Astro Zwart
                 ],
             ]),
         $storeId

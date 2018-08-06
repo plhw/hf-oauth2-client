@@ -1,5 +1,19 @@
-#!/usr/bin/env php
 <?php
+
+/**
+ * Project 'Healthy Feet' by Podolab Hoeksche Waard.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @see       https://plhw.nl/
+ *
+ * @copyright Copyright (c) 2010 - 2018 bushbaby multimedia. (https://bushbaby.nl)
+ * @author    Bas Kamer <baskamer@gmail.com>
+ * @license   Proprietary License
+ *
+ * @package   plhw/hf-api-client
+ */
 
 declare(strict_types=1);
 
@@ -25,33 +39,33 @@ try {
         ->withFilter('query', 'Sandalinos Catalogue')
         ->withPage(1, 1);
 
-    $results     = $api->commerce_listCataloguesOfStore($query, $storeId);
+    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
     $catalogueId = $results['data'][0]['id'] ?? '';
 
     $query = Query::create()
         ->withFilter('code', 'SND')// sandlinos custom made groep!
         ->withPage(1, 1);
 
-    $results        = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
+    $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
     $productGroupId = $results['data'][0]['id'] ?? '';
 
     // once we have the storeId and the catalogue id, we can get list the product groups
-    $query   = Query::create();
-    $query   = $query->withIncluded('assigned-values');
+    $query = Query::create();
+    $query = $query->withIncluded('assigned-values');
     $results = $api->commerce_listProductsOfProductGroup($query, $storeId, $catalogueId, $productGroupId);
 
     // this is new and is an cache of loaded resources, by type and id.
 } catch (IdentityProviderException $e) {
     die($e->getMessage());
 } catch (GatewayException $e) {
-    printf("%s\n\n", $e->getMessage());
-    printf('%s', $api->getLastResponseBody());
+    \printf("%s\n\n", $e->getMessage());
+    \printf('%s', $api->getLastResponseBody());
     die();
 }
 
 if ($api->isSuccess() && $results) {
     foreach ($results['data'] as $result) {
-        printf("Product %s : %s (%s)\n",
+        \printf("Product %s : %s (%s)\n",
             $result['id'],
             $result['attributes']['description'],
             $result['attributes']['code']
@@ -60,10 +74,10 @@ if ($api->isSuccess() && $results) {
         $attributeValues = $result['relationships']['assigned_values']['data'] ?? [];
 
         foreach ($attributeValues as ['type' => $type, 'id' => $id]) {
-            printf(" %-15s: %s\n", $api->cachedResources[$type][$id]['attributes']['attribute-code'] ?? 'n/a', $api->cachedResources[$type][$id]['attributes']['value'] ?? 'n/a');
+            \printf(" %-15s: %s\n", $api->cachedResources[$type][$id]['attributes']['attribute-code'] ?? 'n/a', $api->cachedResources[$type][$id]['attributes']['value'] ?? 'n/a');
         }
     }
 } else {
-    printf("Error (%d)\n", $api->getStatusCode());
-    print_r($results);
+    \printf("Error (%d)\n", $api->getStatusCode());
+    \print_r($results);
 }

@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-/*
+/**
  * Project 'Healthy Feet' by Podolab Hoeksche Waard.
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,10 +8,14 @@ declare(strict_types=1);
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2018 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
+ *
+ * @package   plhw/hf-api-client
  */
+
+declare(strict_types=1);
 
 namespace HF\ApiClient\Options;
 
@@ -39,15 +41,15 @@ final class Options
         string $scope,
         string $grantType
     ) {
-        $this->serverUri               = $serverUri;
-        $this->clientId                = $clientId;
-        $this->clientSecret            = $clientSecret;
-        $this->redirectUri             = $redirectUri;
-        $this->authorizeUri            = $authorizeUri;
-        $this->tokenUri                = $tokenUri;
+        $this->serverUri = $serverUri;
+        $this->clientId = $clientId;
+        $this->clientSecret = $clientSecret;
+        $this->redirectUri = $redirectUri;
+        $this->authorizeUri = $authorizeUri;
+        $this->tokenUri = $tokenUri;
         $this->resourceOwnerDetailsUri = $resourceOwnerDetailsUri;
-        $this->scope                   = $scope;
-        $this->grantType               = $grantType;
+        $this->scope = $scope;
+        $this->grantType = $grantType;
     }
 
     public static function fromArray(array $options = []): self
@@ -87,17 +89,17 @@ final class Options
 
     public function getAuthorizeUri(): string
     {
-        return sprintf($this->authorizeUri, $this->serverUri);
+        return \sprintf($this->authorizeUri, $this->serverUri);
     }
 
     public function getTokenUri(): string
     {
-        return sprintf($this->tokenUri, $this->serverUri);
+        return \sprintf($this->tokenUri, $this->serverUri);
     }
 
     public function getResourceOwnerDetailsUri(): string
     {
-        return sprintf($this->resourceOwnerDetailsUri, $this->serverUri);
+        return \sprintf($this->resourceOwnerDetailsUri, $this->serverUri);
     }
 
     public function getScope(): string

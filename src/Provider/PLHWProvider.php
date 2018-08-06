@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-/*
+/**
  * Project 'Healthy Feet' by Podolab Hoeksche Waard.
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,10 +8,14 @@ declare(strict_types=1);
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2018 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
+ *
+ * @package   plhw/hf-api-client
  */
+
+declare(strict_types=1);
 
 namespace HF\ApiClient\Provider;
 
@@ -36,7 +38,7 @@ class PLHWProvider extends GenericProvider
     protected function checkResponse(ResponseInterface $response, $data)
     {
         if (! empty($data['error'])) {
-            $code  = 0;
+            $code = 0;
             $error = $data['error_description'];
             throw new IdentityProviderException($error, $code, $data);
         }

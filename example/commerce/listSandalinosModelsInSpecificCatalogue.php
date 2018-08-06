@@ -1,5 +1,19 @@
-#!/usr/bin/env php
 <?php
+
+/**
+ * Project 'Healthy Feet' by Podolab Hoeksche Waard.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @see       https://plhw.nl/
+ *
+ * @copyright Copyright (c) 2010 - 2018 bushbaby multimedia. (https://bushbaby.nl)
+ * @author    Bas Kamer <baskamer@gmail.com>
+ * @license   Proprietary License
+ *
+ * @package   plhw/hf-api-client
+ */
 
 declare(strict_types=1);
 
@@ -16,7 +30,7 @@ try {
      *
      * Since we have a cache setup (via '../setup.php' we will use that
      */
-    $cacheKey = sha1('id-key');
+    $cacheKey = \sha1('id-key');
 
     // try to get $storeId, $catalogueId from the cache
     @list(
@@ -29,7 +43,7 @@ try {
         $sndMidsoleProductGroupId,
         $sndOutsoleProductGroupId) = $cache->getItem($cacheKey, $success);
 
-    if (($storeId === null || $catalogueId === null || $sndProductGroupId === null) || ! $success) {
+    if ((null === $storeId || null === $catalogueId || null === $sndProductGroupId) || ! $success) {
         $storeQueryResult = $api->commerce_listStores(
             Query::create()->withFilter('query', 'shop.PLHW')->withPage(1, 1)
         );
@@ -48,35 +62,35 @@ try {
             $storeId,
             $catalogueId
         );
-        $sndProductGroupId          = $sndProductGroupQueryResult['data'][0]['id'] ?? '';
+        $sndProductGroupId = $sndProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndShaftsProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
             $query = Query::create()->withFilter('code', 'S:CM:SH')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
-        $sndShaftsProductGroupId          = $sndShaftsProductGroupQueryResult['data'][0]['id'] ?? '';
+        $sndShaftsProductGroupId = $sndShaftsProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndCoverProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
             $query = Query::create()->withFilter('code', 'S:CM:CV')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
-        $sndCoverProductGroupId          = $sndCoverProductGroupQueryResult['data'][0]['id'] ?? '';
+        $sndCoverProductGroupId = $sndCoverProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndFootbedProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
             $query = Query::create()->withFilter('code', 'S:CM:FB')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
-        $sndFootbedProductGroupId          = $sndFootbedProductGroupQueryResult['data'][0]['id'] ?? '';
+        $sndFootbedProductGroupId = $sndFootbedProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndMidsoleProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
             $query = Query::create()->withFilter('code', 'S:CM:MS')->withPage(1, 1),
             $storeId,
             $catalogueId
         );
-        $sndMidsoleProductGroupId          = $sndMidsoleProductGroupQueryResult['data'][0]['id'] ?? '';
+        $sndMidsoleProductGroupId = $sndMidsoleProductGroupQueryResult['data'][0]['id'] ?? '';
 
         $sndOutsoleProductGroupId = $api->commerce_listProductGroupsOfCatalogue(
             $query = Query::create()->withFilter('code', 'S:CM:OS')->withPage(1, 1),
@@ -97,7 +111,7 @@ try {
         ]);
     }
 
-    printf("We have collected these id's to work with '%s'\n\n", implode("', '", [
+    \printf("We have collected these id's to work with '%s'\n\n", \implode("', '", [
         $storeId,
         $catalogueId,
         $sndProductGroupId,
@@ -129,29 +143,28 @@ try {
     );
 
     if ($api->isSuccess()) {
-        printf("\nLADIES MODELS\n\n");
+        \printf("\nLADIES MODELS\n\n");
 
         // loop over the loaded product(s)
         foreach ($results['data'] as $product) {
             if (null !== $product['attributes']['sales-price']) {
                 // money comes in as cents; eg. '999 EUR' for €9.99
-                $amount = explode(' ', $product['attributes']['sales-price'])[0];
+                $amount = \explode(' ', $product['attributes']['sales-price'])[0];
 
                 // so it must be divided by a hundred
                 $amount /= 100;
 
-                $salesPrice = sprintf('€%01.2f', $amount);
+                $salesPrice = \sprintf('€%01.2f', $amount);
             } else { // no price available?
                 $salesPrice = 'n/a';
             }
 
-            printf("- %s (%s) %s\n", $product['attributes']['description'], $product['attributes']['code'], $salesPrice);
+            \printf("- %s (%s) %s\n", $product['attributes']['description'], $product['attributes']['code'], $salesPrice);
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop
             if (isset($product['relationships']['assigned-values'])) {
                 foreach ($product['relationships']['assigned-values']['data'] as ['type' => $type, 'id' => $id]) {
-
                     // get assigned value resource
                     $assignedValue = $api->cachedResources[$type][$id];
 
@@ -163,7 +176,7 @@ try {
                         // get assigned value attribute resource
                         $attribute = $api->cachedResources[$type][$id];
 
-                        printf(
+                        \printf(
                             " - ATTR: %s (%s) %s (%s)\n",
                             $attribute['attributes']['label'],
                             $attribute['attributes']['code'],
@@ -175,8 +188,8 @@ try {
             }
         }
     } else {
-        printf("Error (%d)\n", $api->getStatusCode());
-        print_r($results);
+        \printf("Error (%d)\n", $api->getStatusCode());
+        \print_r($results);
     }
 
     /**
@@ -188,7 +201,6 @@ try {
         ->withFilter('assignedValues', [
         ])
         ->withIncluded('assigned-values.attribute');
-
 
     $results = $api->commerce_listProductsOfProductGroup(
         $query = Query::create()
@@ -205,16 +217,15 @@ try {
     );
 
     if ($api->isSuccess()) {
-        printf("\nPRODUCT VARIANTS FOR MODEL\n\n");
+        \printf("\nPRODUCT VARIANTS FOR MODEL\n\n");
 
         // loop over the loaded product(s)
-        foreach ($results['data'] as $key=>$product) {
-            printf("- %s (%s) (%s)\n", $product['attributes']['description'], $product['attributes']['code'], $key + 1);
+        foreach ($results['data'] as $key => $product) {
+            \printf("- %s (%s) (%s)\n", $product['attributes']['description'], $product['attributes']['code'], $key + 1);
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop
             foreach ($product['relationships']['assigned-values']['data'] as ['type' => $type, 'id' => $id]) {
-
                 // get assigned value resource
                 $assignedValue = $api->cachedResources[$type][$id];
 
@@ -225,7 +236,7 @@ try {
                 // get assigned value attribute resource
                 $attribute = $api->cachedResources[$type][$id];
 
-                printf(
+                \printf(
                     " - ATTR: %s (%s) %s (%s)\n",
                     $attribute['attributes']['label'],
                     $attribute['attributes']['code'],
@@ -235,13 +246,13 @@ try {
             }
         }
     } else {
-        printf("Error (%d)\n", $api->getStatusCode());
-        print_r($results);
+        \printf("Error (%d)\n", $api->getStatusCode());
+        \print_r($results);
     }
 } catch (IdentityProviderException $e) {
     die($e->getMessage());
 } catch (GatewayException $e) {
-    printf("%s\n\n", $e->getMessage());
-    printf('%s', $api->getLastResponseBody());
+    \printf("%s\n\n", $e->getMessage());
+    \printf('%s', $api->getLastResponseBody());
     die();
 }

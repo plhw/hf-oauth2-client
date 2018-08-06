@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-/*
+/**
  * Project 'Healthy Feet' by Podolab Hoeksche Waard.
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,10 +8,14 @@ declare(strict_types=1);
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2018 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
+ *
+ * @package   plhw/hf-api-client
  */
+
+declare(strict_types=1);
 
 namespace HF\ApiClient\Query;
 
@@ -24,11 +26,11 @@ use Zend\Http\Header\UserAgent;
 
 class Query
 {
-    private $filter  = [];
-    private $page    = [];
+    private $filter = [];
+    private $page = [];
     private $include = [];
-    private $sort    = [];
-    private $other   = [];
+    private $sort = [];
+    private $other = [];
     private $headers = [
         'Accept' => 'application/json',
     ];
@@ -46,7 +48,7 @@ class Query
 
     public function withParam(string $property, $value): Query
     {
-        if (! is_scalar($value) && ! is_array($value)) {
+        if (! \is_scalar($value) && ! \is_array($value)) {
             throw new \UnexpectedValueException('Value must be scalar or array');
         }
 
@@ -59,7 +61,7 @@ class Query
 
     public function withFilter(string $property, $value): Query
     {
-        if (! is_scalar($value) && ! is_array($value)) {
+        if (! \is_scalar($value) && ! \is_array($value)) {
             throw new \UnexpectedValueException('Value must be scalar or array');
         }
 
@@ -87,7 +89,7 @@ class Query
 
         $query->sort[] = [
             'property' => $property,
-            'asc'      => $ascending,
+            'asc' => $ascending,
         ];
 
         return $query;
@@ -101,14 +103,14 @@ class Query
         $query = clone $this;
 
         $query->page['offset'] = ($page - 1) * $length;
-        $query->page['limit']  = $length;
+        $query->page['limit'] = $length;
 
         return $query;
     }
 
     public function withIncluded(string $includeName): Query
     {
-        if (in_array($includeName, $this->include, true)) {
+        if (\in_array($includeName, $this->include, true)) {
             return $this;
         }
 
@@ -133,7 +135,7 @@ class Query
             $query['filter'] = $this->filter;
         }
         if (! empty($this->sort)) {
-            $query['sort'] = implode(',', array_map(function (array $sort) {
+            $query['sort'] = \implode(',', \array_map(function (array $sort) {
                 return (! $sort['asc'] ? '-' : '') . $sort['property'];
             }, $this->sort));
         }
@@ -142,10 +144,10 @@ class Query
         }
 
         if (! empty($this->include)) {
-            $query['include'] = implode(',', $this->include);
+            $query['include'] = \implode(',', $this->include);
         }
 
-        $queryString = http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+        $queryString = \http_build_query($query, '', '&', PHP_QUERY_RFC3986);
 
         return $queryString ? '?' . $queryString : '';
     }
@@ -157,24 +159,24 @@ class Query
 
     public function headers(): array
     {
-        $al        = new AcceptLanguage();
+        $al = new AcceptLanguage();
         $languages = ['nl', 'en'];
 
-        if (in_array(self::$language, $languages, true)) {
+        if (\in_array(self::$language, $languages, true)) {
             // move to front to priorize
-            $pos = array_search(self::$language, $languages);
+            $pos = \array_search(self::$language, $languages);
 
-            array_splice($languages, $pos, 1);
+            \array_splice($languages, $pos, 1);
         }
 
         // simple prepend
-        array_unshift($languages, self::$language);
+        \array_unshift($languages, self::$language);
 
         foreach ($languages as $key => $language) {
-            $al->addLanguage($language, 1 - (($key + .1) / count($languages)));
+            $al->addLanguage($language, 1 - (($key + .1) / \count($languages)));
         }
 
-        $ua = new UserAgent(sprintf('PLHW Api Client \'%s\'', Versions::getVersion('plhw/hf-api-client')));
+        $ua = new UserAgent(\sprintf('PLHW Api Client \'%s\'', Versions::getVersion('plhw/hf-api-client')));
 
         $this->headers[$ua->getFieldName()] = $ua->getFieldValue();
         $this->headers[$al->getFieldName()] = $al->getFieldValue();

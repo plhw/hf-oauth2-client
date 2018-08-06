@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-/*
+/**
  * Project 'Healthy Feet' by Podolab Hoeksche Waard.
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,10 +8,14 @@ declare(strict_types=1);
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2017 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2018 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
+ *
+ * @package   plhw/hf-api-client
  */
+
+declare(strict_types=1);
 
 namespace HF\ApiClient;
 
@@ -139,11 +141,11 @@ final class ApiClient
     public function __call($name, $params)
     {
         if ($accessToken = $this->getAccessToken($this->options->getGrantType(), $this->options->getScope())) {
-            $this->api->setHeaders(['Authorization' => sprintf('Bearer %s', $accessToken->getToken())]);
+            $this->api->setHeaders(['Authorization' => \sprintf('Bearer %s', $accessToken->getToken())]);
         }
 
-        $result                 = call_user_func_array([$this->api, $name], $params);
-        $headers                = (new Headers())->addHeaders($this->api->getResponseHeaders());
+        $result = \call_user_func_array([$this->api, $name], $params);
+        $headers = (new Headers())->addHeaders($this->api->getResponseHeaders());
         $this->lastResponseBody = $this->api->getHttpClient()->getResponse()->getBody();
 
         if ($headers->has('Content-Type')) {
@@ -156,15 +158,15 @@ final class ApiClient
 
         if (! $this->api->isSuccess()) {
             $result = $this->api->getErrorMsg();
-            $result = json_decode($result, true);
+            $result = \json_decode($result, true);
         }
 
         if (! $this->api->isSuccess()) {
-            if (@$result['error'] === 'invalid_token') {
+            if ('invalid_token' === @$result['error']) {
                 $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
 
                 // call again
-                call_user_func_array([$this, $name], $params);
+                \call_user_func_array([$this, $name], $params);
             }
         }
 
@@ -176,8 +178,8 @@ final class ApiClient
             }
 
             foreach ($resources as $resource) {
-                $cachedResource                                            = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
-                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource);
+                $cachedResource = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
+                $cachedResource = ArrayUtils::merge($cachedResource, $resource);
                 unset($cachedResource['id'], $cachedResource['type']);
                 $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
             }
@@ -185,8 +187,8 @@ final class ApiClient
 
         if (isset($result['included'])) {
             foreach ($result['included'] as $resource) {
-                $cachedResource                                            = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
-                $cachedResource                                            = ArrayUtils::merge($cachedResource, $resource);
+                $cachedResource = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
+                $cachedResource = ArrayUtils::merge($cachedResource, $resource);
                 unset($cachedResource['id'], $cachedResource['type']);
                 $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
             }
@@ -214,16 +216,16 @@ final class ApiClient
         string $grant,
         string $scope
     ): ?AccessToken {
-        if ($this->accessToken === null || $this->accessToken->hasExpired()) {
+        if (null === $this->accessToken || $this->accessToken->hasExpired()) {
             $provider = $this->createOAuth2Provider();
 
-            $cache    = $this->getCacheStorage();
-            $cacheKey = sha1($grant . serialize($scope));
+            $cache = $this->getCacheStorage();
+            $cacheKey = \sha1($grant . \serialize($scope));
 
             // try to get a token from the cache
             $accessToken = $cache->getItem($cacheKey, $success);
 
-            if ($accessToken === null || ! $success || $accessToken->hasExpired()) {
+            if (null === $accessToken || ! $success || $accessToken->hasExpired()) {
                 // try to get a new access token
                 $accessToken = $provider->getAccessToken($grant, [
                     'scope' => $scope,
@@ -244,21 +246,21 @@ final class ApiClient
     ): void {
         $this->accessToken = null;
 
-        $cache    = $this->getCacheStorage();
-        $cacheKey = sha1($grant . serialize($scope));
+        $cache = $this->getCacheStorage();
+        $cacheKey = \sha1($grant . \serialize($scope));
 
         $cache->removeItem($cacheKey);
     }
 
     private function createOAuth2Provider(): PLHWProvider
     {
-        if ($this->provider === null) {
+        if (null === $this->provider) {
             $this->provider = new PLHWProvider([
-                'clientId'                => $this->options->getClientId(),
-                'clientSecret'            => $this->options->getClientSecret(),
-                'redirectUri'             => $this->options->getRedirectUri(),
-                'urlAuthorize'            => $this->options->getAuthorizeUri(),
-                'urlAccessToken'          => $this->options->getTokenUri(),
+                'clientId' => $this->options->getClientId(),
+                'clientSecret' => $this->options->getClientSecret(),
+                'redirectUri' => $this->options->getRedirectUri(),
+                'urlAuthorize' => $this->options->getAuthorizeUri(),
+                'urlAccessToken' => $this->options->getTokenUri(),
                 'urlResourceOwnerDetails' => $this->options->getResourceOwnerDetailsUri(),
             ]);
         }
@@ -268,10 +270,10 @@ final class ApiClient
 
     private function getCacheStorage(): StorageInterface
     {
-        if ($this->cache === null) {
+        if (null === $this->cache) {
             $this->cache = StorageFactory::factory([
                 'adapter' => [
-                    'name'      => 'filesystem',
+                    'name' => 'filesystem',
                     'dir_level' => 0,
                 ],
                 'plugins' => ['serializer'],

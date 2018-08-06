@@ -15,7 +15,7 @@
   },
   "require":      {
     "php": "^7.0",
-    "beberlei/assert": "^2.7",
+    "beberlei/assert": "^2.7 || ^3.0",
     "league/oauth2-client": "^2.2",
     "ocramius/package-versions": "^1.1",
     "roave/security-advisories": "dev-master",

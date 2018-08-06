@@ -121,7 +121,7 @@ try {
                 ['attributeCode' => 'gender', 'value' => 'female'],
                 ['attributeCode' => 'model', 'available' => true],
             ])
-            ->withIncluded('assignedValues.attribute')
+            ->withIncluded('assigned-values.attribute')
             ->withSort('code', true),
         $storeId,
         $catalogueId,
@@ -149,8 +149,8 @@ try {
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop
-            if (isset($product['relationships']['assigned_values'])) {
-                foreach ($product['relationships']['assigned_values']['data'] as ['type' => $type, 'id' => $id]) {
+            if (isset($product['relationships']['assigned-values'])) {
+                foreach ($product['relationships']['assigned-values']['data'] as ['type' => $type, 'id' => $id]) {
 
                     // get assigned value resource
                     $assignedValue = $api->cachedResources[$type][$id];
@@ -187,7 +187,7 @@ try {
     $query = \HF\ApiClient\Query\Query::create()
         ->withFilter('assignedValues', [
         ])
-        ->withIncluded('assignedValues.attribute');
+        ->withIncluded('assigned-values.attribute');
 
 
     $results = $api->commerce_listProductsOfProductGroup(
@@ -197,7 +197,7 @@ try {
                 ['attributeCode' => 'color', 'available' => true],
                 ['attributeCode' => 'material', 'available' => true],
             ])
-            ->withIncluded('assignedValues.attribute')
+            ->withIncluded('assigned-values.attribute')
             ->withSort('code', true),
         $storeId,
         $catalogueId,
@@ -213,7 +213,7 @@ try {
 
             // loop over the assigned_values for a product (one-to-many)
             // we'll extract the type and id from data inside the loop
-            foreach ($product['relationships']['assigned_values']['data'] as ['type' => $type, 'id' => $id]) {
+            foreach ($product['relationships']['assigned-values']['data'] as ['type' => $type, 'id' => $id]) {
 
                 // get assigned value resource
                 $assignedValue = $api->cachedResources[$type][$id];

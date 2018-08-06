@@ -10,7 +10,7 @@ use HF\ApiClient\Query\Query;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 $query = Query::create()
-    ->withIncluded('articleGroups')
+    ->withIncluded('article-groups')
     ->withPage(1, 1);
 
 try {
@@ -28,7 +28,7 @@ if ($api->isSuccess() && $results) {
         printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],
             $result['attributes']['description']);
 
-        foreach ($result['relationships']['article_groups']['data'] as $rel) {
+        foreach ($result['relationships']['article-groups']['data'] as $rel) {
             foreach ($results['included'] as $include) {
                 if ($include['id'] === $rel['id']) {
                     printf(

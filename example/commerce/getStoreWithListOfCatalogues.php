@@ -10,11 +10,20 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 require_once __DIR__ . '/../setup.php';
 
 try {
+    // we must get a storeId, which is different per environment.
+    // as an example i'll show how you can doe a search by name
+    $query = Query::create()
+        ->withFilter('query', 'shop.PLHW')
+        ->withPage(1, 1);
+
+    $results = $api->commerce_listStores($query);
+    $storeId = $results['data'][0]['id'] ?? '';
+
     $query = Query::create()
         ->withIncluded('catalogues')
         ->withPage(1, 1);
 
-    $results = $api->commerce_getStore($query, 'a0713068-8c35-51da-b578-a3cce5978221');
+    $results = $api->commerce_getStore($query, $storeId);
 } catch (IdentityProviderException $e) {
     die($e->getMessage());
 } catch (GatewayException $e) {
@@ -42,5 +51,5 @@ if ($api->isSuccess() && $results) {
     }
 } else {
     printf("Error (%d)\n", $api->getStatusCode());
-    print_r($results);
+ //   print_r($results);
 }

@@ -37,7 +37,7 @@ try {
 
     // once we have the storeId and the catalogue id, we can get list the product groups
     $query   = Query::create();
-    $query   = $query->withIncluded('assignedValues');
+    $query   = $query->withIncluded('assigned-values');
     $results = $api->commerce_listProductsOfProductGroup($query, $storeId, $catalogueId, $productGroupId);
 
     // this is new and is an cache of loaded resources, by type and id.

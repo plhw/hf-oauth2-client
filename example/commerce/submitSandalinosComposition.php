@@ -64,5 +64,4 @@ try {
 } catch (GatewayException $e) {
     printf("%s\n\n", $e->getMessage());
     printf('%s', $api->getLastResponseBody());
-    die();
 }

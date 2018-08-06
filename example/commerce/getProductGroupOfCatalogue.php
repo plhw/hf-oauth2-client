@@ -20,7 +20,7 @@ try {
     // now we search for a specific catalogue within that store
     $query = Query::create()
         ->withFilter('query', 'Sandalinos Catalogue')
-        ->withIncluded('productGroups')
+        ->withIncluded('product-groups')
         ->withPage(1, 1);
 
     $results = $api->commerce_listCataloguesOfStore($query, $storeId);

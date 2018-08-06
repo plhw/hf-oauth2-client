@@ -13,7 +13,7 @@ try {
     // we must get a storeId, which is different per environment.
     // as an example i'll show how you can doe a search by name
     $query = Query::create()
-        ->withIncluded('articleGroups')
+        ->withIncluded('article-groups')
         ->withFilter('query', 'shop.PLHW')
         ->withPage(1, 1);
 

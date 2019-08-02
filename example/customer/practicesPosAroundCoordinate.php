@@ -27,8 +27,8 @@ $query = Query::create()
     ->withFilter('around', '52.3629882,4.8593175')
     ->withFilter('distance', 50000)
     ->withFilter('product', 'Sandalen')
-    ->withPage(1, 3)
-    ->withSort('name', false);
+    ->withPage(1, 10)
+    ->withSort('distance', true);
 
 try {
     $results = $api->customer_listPosAroundCoordinate($query);
@@ -42,9 +42,10 @@ try {
 
 if ($api->isSuccess()) {
     foreach ($results['data'] as $result) {
-        \printf("Practice %s on %skm\n", $result['attributes']['name'],
-            \round(($result['attributes']['distance'] / 100)) / 10);
-        \printf(" - sells %s\n", \implode(', ', $result['attributes']['products']));
+        \printf("Practice %s on %skm\n", $result['attributes']['name'], \round(($result['attributes']['distance'] / 100)) / 10);
+        \printf(" - sells   : %s\n", \implode(', ', $result['attributes']['products']));
+        \printf(" - address : %s, %s\n", \implode(', ', \explode("\n", $result['attributes']['address'])), $result['attributes']['country']);
+        \printf(" - support : %s\n", \implode(', ', \array_filter([$result['attributes']['support-phone-number'], $result['attributes']['support-email-address'], $result['attributes']['support-url']])));
     }
 } else {
     \printf("Error (%d)\n", $api->getStatusCode());

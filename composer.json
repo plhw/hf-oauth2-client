@@ -23,7 +23,7 @@
     "zendframework/zendservice-api": "^2.0"
   },
   "require-dev":  {
-    "doctrine/common": "^2.7",
+    "doctrine/common": "^2.7 || ^3.0",
     "malukenho/docheader": "^0.1",
     "plhw/hf-cs-fixer-config": "^1.0",
     "roave/security-advisories": "dev-master"

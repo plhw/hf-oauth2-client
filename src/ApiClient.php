@@ -119,13 +119,16 @@ final class ApiClient
 
         $new->api = new Uhura($options->getServerUri());
 
-        $new->api->useResponseHandler(new ResponseHandler(function (bool $success) use ($new): void {
-            $new->success = $success;
-        }, function (bool $statusCode) use ($new): void {
-            $new->statusCode = $statusCode;
-        }, function (string $responseBody) use ($new): void {
-            $new->responseBody = $responseBody;
-        }));
+        $new->api->useResponseHandler(new ResponseHandler(
+            function (bool $success) use ($new): void {
+                $new->success = $success;
+            },
+            function (int $statusCode) use ($new): void {
+                $new->statusCode = $statusCode;
+            },
+            function (string $responseBody) use ($new): void {
+                $new->responseBody = $responseBody;
+            }));
 
         $new->cache = $cache;
 

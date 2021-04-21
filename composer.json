@@ -9,18 +9,19 @@
       "email": "baskamer@gmail.com"
     }
   ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "config":       {
     "optimize-autoloader": true,
     "sort-packages":       true
   },
   "require":      {
-    "php": "^7.0",
-    "beberlei/assert": "^2.7 || ^3.0",
-    "league/oauth2-client": "^2.2",
-    "ocramius/package-versions": "^1.3",
-    "zendframework/zend-cache": "^2.7",
-    "zendframework/zend-serializer": "^2.8",
-    "zendframework/zendservice-api": "^2.0"
+    "php": "^8.0",
+    "beberlei/assert": "^3.3",
+    "laminas/laminas-cache": "^2.5",
+    "league/oauth2-client": "^2.6",
+    "ocramius/package-versions": "^2.1",
+    "zendframework/zend-serializer": "^2.1.1"
   },
   "require-dev":  {
     "doctrine/common": "^2.7",

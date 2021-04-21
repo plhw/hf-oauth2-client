@@ -8,7 +8,7 @@
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2019 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2021 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
  *
@@ -33,7 +33,7 @@ try {
     $cacheKey = \sha1('id-key');
 
     // try to get $storeId, $catalogueId from the cache
-    @list(
+    @[
         $storeId,
         $catalogueId,
         $sndProductGroupId,
@@ -41,7 +41,7 @@ try {
         $sndCoverProductGroupId,
         $sndFootbedProductGroupId,
         $sndMidsoleProductGroupId,
-        $sndOutsoleProductGroupId) = $cache->getItem($cacheKey, $success);
+        $sndOutsoleProductGroupId] = $cache->getItem($cacheKey, $success);
 
     if ((null === $storeId || null === $catalogueId || null === $sndProductGroupId) || ! $success) {
         $storeQueryResult = $api->commerce_listStores(
@@ -250,9 +250,9 @@ try {
         \print_r($results);
     }
 } catch (IdentityProviderException $e) {
-    die($e->getMessage());
+    exit($e->getMessage());
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
-    die();
+    exit();
 }

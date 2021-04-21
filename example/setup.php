@@ -8,7 +8,7 @@
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2019 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2021 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
  *
@@ -37,13 +37,13 @@ foreach ($autoloadFiles as $autoloadFile) {
 
 use HF\ApiClient\ApiClient;
 use HF\ApiClient\Options\Options;
-use Zend\Cache\StorageFactory;
+use Laminas\Cache\StorageFactory;
 
 if (! \file_exists('.hf-api-client-secrets.php')) {
-    die('copy example/.hf-api-client-secrets.php.dist to APP_ROOT/.hf-api-client-secrets.php');
+    exit('copy example/.hf-api-client-secrets.php.dist to APP_ROOT/.hf-api-client-secrets.php');
 }
 
-$options = Options::fromArray(include('.hf-api-client-secrets.php'));
+$options = Options::fromArray(include '.hf-api-client-secrets.php');
 
 $cacheOptions = [
     'namespace' => \sha1($options->getClientId() . $options->getScope()),

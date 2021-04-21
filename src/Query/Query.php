@@ -8,7 +8,7 @@
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2019 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2021 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
  *
@@ -20,9 +20,9 @@ declare(strict_types=1);
 namespace HF\ApiClient\Query;
 
 use Assert\Assertion;
+use Laminas\Http\Header\AcceptLanguage;
+use Laminas\Http\Header\UserAgent;
 use PackageVersions\Versions;
-use Zend\Http\Header\AcceptLanguage;
-use Zend\Http\Header\UserAgent;
 
 class Query
 {

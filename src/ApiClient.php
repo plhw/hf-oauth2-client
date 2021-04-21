@@ -8,7 +8,7 @@
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2019 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2021 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
  *
@@ -23,12 +23,12 @@ use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Options\Options;
 use HF\ApiClient\Provider\PLHWProvider;
 use HF\ApiClient\Query\Query;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Cache\StorageFactory;
+use Laminas\Http\Headers;
+use Laminas\Stdlib\ArrayUtils;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
-use Zend\Cache\Storage\StorageInterface;
-use Zend\Cache\StorageFactory;
-use Zend\Http\Headers;
-use Zend\Stdlib\ArrayUtils;
 use ZendService\Api\Api;
 
 /**

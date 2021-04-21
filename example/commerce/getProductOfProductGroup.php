@@ -8,7 +8,7 @@
  *
  * @see       https://plhw.nl/
  *
- * @copyright Copyright (c) 2010 - 2019 bushbaby multimedia. (https://bushbaby.nl)
+ * @copyright Copyright (c) 2010 - 2021 bushbaby multimedia. (https://bushbaby.nl)
  * @author    Bas Kamer <baskamer@gmail.com>
  * @license   Proprietary License
  *
@@ -55,11 +55,11 @@ try {
 
     $results = $api->commerce_getProductOfProductGroup(null, $storeId, $catalogueId, $productGroupId, $randomProductId);
 } catch (IdentityProviderException $e) {
-    die($e->getMessage());
+    exit($e->getMessage());
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
-    die();
+    exit();
 }
 
 if ($api->isSuccess() && $results) {

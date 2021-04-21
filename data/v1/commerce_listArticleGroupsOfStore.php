@@ -26,7 +26,8 @@ if (! $storeId) {
 }
 
 return [
-    'url' => \sprintf('/commerce/stores/%s/article-groups%s', $storeId, (string) $query),
+    'url' => \sprintf('/commerce/stores/%s/article-groups', $storeId),
+    'query' => $query->toQueryParams(),
     'method' => 'GET',
     'header' => $query->headers(),
     'response' => [

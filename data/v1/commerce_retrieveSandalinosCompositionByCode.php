@@ -26,7 +26,8 @@ if (! $storeId) {
 }
 
 return [
-    'url' => \sprintf('/commerce/stores/%s/retrieve-sandalinos-composition%s', $storeId, $query),
+    'url' => \sprintf('/commerce/stores/%s/retrieve-sandalinos-composition', $storeId),
+    'query' => $query->toQueryParams(),
     'method' => 'GET',
     'header' => $query->headers(),
     'response' => [

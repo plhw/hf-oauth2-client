@@ -18,10 +18,28 @@
   "require":      {
     "php": "^8.0",
     "beberlei/assert": "^3.3",
-    "laminas/laminas-cache": "^2.5",
+    "laminas/laminas-cache": "^2.11.x-dev",
+    "laminas/laminas-http": "^2.14",
+    "laminas/laminas-serializer": "^2.10",
     "league/oauth2-client": "^2.6",
     "ocramius/package-versions": "^2.1",
-    "zendframework/zend-serializer": "^2.1.1"
+    "uhura/uhura": "^0.7.0"
+  },
+  "replace": {
+    "laminas/laminas-cache-storage-adapter-apc": "*",
+    "laminas/laminas-cache-storage-adapter-apcu": "*",
+    "laminas/laminas-cache-storage-adapter-blackhole": "*",
+    "laminas/laminas-cache-storage-adapter-dba": "*",
+    "laminas/laminas-cache-storage-adapter-ext-mongodb": "*",
+    "laminas/laminas-cache-storage-adapter-memory": "*",
+    "laminas/laminas-cache-storage-adapter-memcache": "*",
+    "laminas/laminas-cache-storage-adapter-memcached": "*",
+    "laminas/laminas-cache-storage-adapter-mongodb": "*",
+    "laminas/laminas-cache-storage-adapter-redis": "*",
+    "laminas/laminas-cache-storage-adapter-session": "*",
+    "laminas/laminas-cache-storage-adapter-wincache": "*",
+    "laminas/laminas-cache-storage-adapter-xcache": "*",
+    "laminas/laminas-cache-storage-adapter-zend-server": "*"
   },
   "require-dev":  {
     "doctrine/common": "^2.7",

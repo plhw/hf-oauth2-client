@@ -121,16 +121,25 @@ class Query
         return $query;
     }
 
-    private function constructQuery(): string
+    public function query(): string
+    {
+        $query = $this->toQueryParams();
+
+        $queryString = \http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+
+        return $queryString ? '?' . $queryString : '';
+    }
+
+    public function toQueryParams(): array
     {
         $query = [];
 
-        // set 'other' first
         if (! empty($this->other)) {
             foreach ($this->other as $key => $value) {
                 $query[$key] = $value;
             }
         }
+
         if (! empty($this->filter)) {
             $query['filter'] = $this->filter;
         }
@@ -147,14 +156,12 @@ class Query
             $query['include'] = \implode(',', $this->include);
         }
 
-        $queryString = \http_build_query($query, '', '&', PHP_QUERY_RFC3986);
-
-        return $queryString ? '?' . $queryString : '';
+        return $query;
     }
 
     public function __toString(): string
     {
-        return $this->constructQuery();
+        return $this->query();
     }
 
     public function headers(): array

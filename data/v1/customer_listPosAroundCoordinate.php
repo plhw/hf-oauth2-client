@@ -21,7 +21,8 @@ declare(strict_types=1);
 $query = $params[0] ?? \HF\ApiClient\Query\Query::create();
 
 return [
-    'url' => '/customer/practices/pos/around-coordinate' . (string) $query,
+    'url' => '/customer/practices/pos/around-coordinate',
+    'query' => $query->toQueryParams(),
     'method' => 'GET',
     'header' => $query->headers(),
     'response' => [

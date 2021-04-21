@@ -19,17 +19,15 @@ declare(strict_types=1);
 
 namespace HF\ApiClient;
 
-use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Options\Options;
 use HF\ApiClient\Provider\PLHWProvider;
 use HF\ApiClient\Query\Query;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Cache\StorageFactory;
-use Laminas\Http\Headers;
 use Laminas\Stdlib\ArrayUtils;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
-use ZendService\Api\Api;
+use Uhura\Uhura;
 
 /**
  * Class ApiClient.
@@ -61,7 +59,7 @@ final class ApiClient
     private $provider;
 
     /**
-     * @var Api
+     * @var Uhura
      */
     private $api;
 
@@ -119,9 +117,15 @@ final class ApiClient
     {
         $new = new static($options);
 
-        $new->api = new Api();
-        $new->api->setUrl($options->getServerUri());
-        $new->api->setApiPath(__DIR__ . '/../data/v1');
+        $new->api = new Uhura($options->getServerUri());
+
+        $new->api->useResponseHandler(new ResponseHandler(function (bool $success) use ($new): void {
+            $new->success = $success;
+        }, function (bool $statusCode) use ($new): void {
+            $new->statusCode = $statusCode;
+        }, function (string $responseBody) use ($new): void {
+            $new->responseBody = $responseBody;
+        }));
 
         $new->cache = $cache;
 
@@ -134,39 +138,52 @@ final class ApiClient
      * @param $name
      * @param $params
      *
+     * @return mixed
      * @throws IdentityProviderException
      *
-     * @return mixed
      */
     public function __call($name, $params)
     {
         if ($accessToken = $this->getAccessToken($this->options->getGrantType(), $this->options->getScope())) {
-            $this->api->setHeaders(['Authorization' => \sprintf('Bearer %s', $accessToken->getToken())]);
+            $this->api->authenticate(\sprintf('Bearer %s', $accessToken->getToken()));
         }
 
-        $result = \call_user_func_array([$this->api, $name], $params);
-        $headers = (new Headers())->addHeaders($this->api->getResponseHeaders());
-        $this->lastResponseBody = $this->api->getHttpClient()->getResponse()->getBody();
+        $path = __DIR__ . '/../data/v1/' . $name . '.php';
 
-        if ($headers->has('Content-Type')) {
-            $contentType = $headers->get('Content-Type');
+        if (! \file_exists($path)) {
+            throw new \Exception(\sprintf('\'%s\" does not exist', $name));
+        }
 
-            if (! $contentType->match(['application/json', 'application/problem+json'])) {
-                throw GatewayException::backendRespondedWithMalformedPayload();
+        $apiParams = include $path;
+
+        $resourceParts = \explode('/', $apiParams['url']);
+        $resourceParts = \array_filter($resourceParts);
+
+        $resourcePart = \array_shift($resourceParts);
+        $resource = $this->api->{$resourcePart};
+
+        while (\count($resourceParts)) {
+            $resourcePart = \array_shift($resourceParts);
+            $resource = $resource->{$resourcePart};
+        }
+
+        /* @var \GuzzleHttp\Psr7\Response $response */
+        try {
+            switch ($apiParams['method']) {
+                case 'GET':
+                    $result = $resource->get($apiParams['query']);
+                    break;
             }
-        }
+        } catch (\GuzzleHttp\Exception\ClientException $clientException) {
+            switch ($clientException->getCode()) {
+                case 401:
+                    $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
 
-        if (! $this->api->isSuccess()) {
-            $result = $this->api->getErrorMsg();
-            $result = \json_decode($result, true);
-        }
-
-        if (! $this->api->isSuccess()) {
-            if ('invalid_token' === @$result['error']) {
-                $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
-
-                // call again
-                \call_user_func_array([$this, $name], $params);
+                    // call again
+                    \call_user_func_array([$this, $name], $params);
+                    break;
+                default:
+                    throw $clientException;
             }
         }
 
@@ -194,22 +211,28 @@ final class ApiClient
             }
         }
 
+        $this->isSuccess = true;
+
         return $result;
     }
 
+    private $success;
+    public  $statusCode;
+    public  $responseBody;
+
     public function isSuccess(): bool
     {
-        return $this->api->isSuccess();
+        return $this->success;
     }
 
     public function getStatusCode(): int
     {
-        return (int) $this->api->getStatusCode();
+        return (int) $this->statusCode;
     }
 
     public function getLastResponseBody(): ?string
     {
-        return $this->lastResponseBody;
+        return $this->responseBody;
     }
 
     private function getAccessToken(
@@ -256,11 +279,11 @@ final class ApiClient
     {
         if (null === $this->provider) {
             $this->provider = new PLHWProvider([
-                'clientId' => $this->options->getClientId(),
-                'clientSecret' => $this->options->getClientSecret(),
-                'redirectUri' => $this->options->getRedirectUri(),
-                'urlAuthorize' => $this->options->getAuthorizeUri(),
-                'urlAccessToken' => $this->options->getTokenUri(),
+                'clientId'                => $this->options->getClientId(),
+                'clientSecret'            => $this->options->getClientSecret(),
+                'redirectUri'             => $this->options->getRedirectUri(),
+                'urlAuthorize'            => $this->options->getAuthorizeUri(),
+                'urlAccessToken'          => $this->options->getTokenUri(),
                 'urlResourceOwnerDetails' => $this->options->getResourceOwnerDetailsUri(),
             ]);
         }
@@ -273,7 +296,7 @@ final class ApiClient
         if (null === $this->cache) {
             $this->cache = StorageFactory::factory([
                 'adapter' => [
-                    'name' => 'filesystem',
+                    'name'      => 'filesystem',
                     'dir_level' => 0,
                 ],
                 'plugins' => ['serializer'],

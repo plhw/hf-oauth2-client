@@ -31,7 +31,8 @@ if (! $articleGroupId) {
 }
 
 return [
-    'url' => \sprintf('/commerce/stores/%s/article-groups/%s%s', $storeId, $articleGroupId, $query),
+    'url' => \sprintf('/commerce/stores/%s/article-groups/%s', $storeId, $articleGroupId),
+    'query' => $query->toQueryParams(),
     'method' => 'GET',
     'header' => $query->headers(),
     'response' => [

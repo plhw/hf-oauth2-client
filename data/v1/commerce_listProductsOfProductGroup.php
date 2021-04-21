@@ -34,7 +34,8 @@ if (! $productGroupId) {
 }
 
 return [
-    'url' => \sprintf('/commerce/stores/%s/catalogues/%s/product-groups/%s/products%s', $storeId, $catalogueId, $productGroupId, (string) $query),
+    'url' => \sprintf('/commerce/stores/%s/catalogues/%s/product-groups/%s/products', $storeId, $catalogueId, $productGroupId),
+    'query' => $query->toQueryParams(),
     'method' => 'GET',
     'header' => $query->headers(),
     'response' => [

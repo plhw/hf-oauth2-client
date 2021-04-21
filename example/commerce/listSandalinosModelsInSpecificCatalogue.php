@@ -17,10 +17,14 @@
 
 declare(strict_types=1);
 
+/** @var $api ApiClient */
+/** @var $cache StorageInterface */
 require_once __DIR__ . '/../setup.php';
 
+use HF\ApiClient\ApiClient;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
+use Laminas\Cache\Storage\StorageInterface;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 try {

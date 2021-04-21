@@ -27,6 +27,7 @@ if (! $dossierId) {
 
 return [
     'url' => \sprintf('/dossier/dossiers/%s/attachments%s', $dossierId, $query),
+    'query' => $query->toQueryParams(),
     'method' => 'GET',
     'header' => $query->headers(),
     'response' => [

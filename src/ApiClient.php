@@ -44,6 +44,8 @@ use Uhura\Uhura;
  * @method array commerce_listCataloguesOfStore(?Query $query, string $storeId)
  * @method array commerce_listStores(?Query $query)
  * @method array customer_listPosAroundCoordinate(Query $query);
+ * @method array customer_queryCustomers(Query $query);
+ * @method array customer_getCustomer(Query $query);
  * @method array dossier_getAttachmentsOfDossier(?Query $query, string $dossierId);
  */
 final class ApiClient
@@ -154,7 +156,7 @@ final class ApiClient
         $path = __DIR__ . '/../data/v1/' . $name . '.php';
 
         if (! \file_exists($path)) {
-            throw new \Exception(\sprintf('\'%s\" does not exist', $name));
+            throw new \Exception(\sprintf('\'%s\' does not exist', $name));
         }
 
         $apiParams = include $path;

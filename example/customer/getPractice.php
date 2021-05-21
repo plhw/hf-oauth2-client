@@ -25,15 +25,11 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$query = Query::create()
-    ->withFilter('around', '52.3629882,4.8593175')
-    ->withFilter('distance', 50000)
-    ->withFilter('product', 'Sandalen')
-    ->withPage(1, 3)
-    ->withSort('name', false);
+$query = Query::create();
+$practiceId = $argv[1] ?? die('uuid required');
 
 try {
-    $results = $api->customer_listPosAroundCoordinate($query);
+    $results = $api->customer_getPractice($query, $practiceId);
 } catch (IdentityProviderException $e) {
     exit($e->getMessage());
 } catch (GatewayException $e) {
@@ -43,11 +39,7 @@ try {
 }
 
 if ($api->isSuccess()) {
-    foreach ($results['data'] as $result) {
-        \printf("Practice %s on %skm\n", $result['attributes']['name'],
-            \round(($result['attributes']['distance'] / 100)) / 10);
-        \printf(" - sells %s\n", \implode(', ', $result['attributes']['products']));
-    }
+    print_r($results);
 } else {
     \printf("Error (%d)\n", $api->getStatusCode());
     \print_r($results);

@@ -45,7 +45,9 @@ use Uhura\Uhura;
  * @method array commerce_listStores(?Query $query)
  * @method array customer_listPosAroundCoordinate(Query $query);
  * @method array customer_queryCustomers(Query $query);
- * @method array customer_getCustomer(Query $query);
+ * @method array customer_getCustomer($customerId);
+ * @method array customer_queryPractices(Query $query);
+ * @method array customer_getPractice($practiceId);
  * @method array dossier_getAttachmentsOfDossier(?Query $query, string $dossierId);
  */
 final class ApiClient
@@ -158,6 +160,12 @@ final class ApiClient
         if (! \file_exists($path)) {
             throw new \Exception(\sprintf('\'%s\' does not exist', $name));
         }
+        /** @var Query $query */
+        if ($params[0] instanceof Query) {
+            $query = $params[0];
+        } else {
+            $query = Query::create();
+        }
 
         $apiParams = include $path;
 
@@ -227,7 +235,7 @@ final class ApiClient
 
     public function isSuccess(): bool
     {
-        return $this->success;
+        return (bool) $this->success;
     }
 
     public function getStatusCode(): int

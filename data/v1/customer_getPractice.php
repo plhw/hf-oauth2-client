@@ -17,10 +17,12 @@
 
 declare(strict_types=1);
 
-/** @var \HF\ApiClient\Query\Query $query */
-$query = $params[0] ?? \HF\ApiClient\Query\Query::create();
+use HF\ApiClient\Query\Query;
 
-$practiceId = $params[1] ?? null;
+/** @var Query $query */
+
+$practiceId = $params[0] ?? null;
+
 
 return [
     'url' => \sprintf('/customer/practices/%s', $practiceId),

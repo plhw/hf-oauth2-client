@@ -17,10 +17,12 @@
 
 declare(strict_types=1);
 
-/** @var \HF\ApiClient\Query\Query $query */
-$query = $params[0] ?? \HF\ApiClient\Query\Query::create();
 
-$customerId = $params[1] ?? null;
+use HF\ApiClient\Query\Query;
+
+/** @var Query $query */
+
+$customerId = $params[0] ?? null;
 
 return [
     'url' => \sprintf('/customer/customers/%s', $customerId),

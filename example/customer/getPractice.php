@@ -25,11 +25,10 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$query = Query::create();
 $practiceId = $argv[1] ?? die('uuid required');
 
 try {
-    $results = $api->customer_getPractice($query, $practiceId);
+    $results = $api->customer_getPractice($practiceId);
 } catch (IdentityProviderException $e) {
     exit($e->getMessage());
 } catch (GatewayException $e) {

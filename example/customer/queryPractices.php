@@ -26,8 +26,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 require_once __DIR__ . '/../setup.php';
 
 $query = Query::create()
-    ->withPage(1, 3)
-    ->withSort('name', false);
+    ->withPage(1, 10);
 
 try {
     $results = $api->customer_queryPractices($query);

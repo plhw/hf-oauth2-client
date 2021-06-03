@@ -25,16 +25,16 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class ResponseHandler
 {
-    /** @var array|int[]  */
+    /** @var array|int[] */
     private $allowedResponseCodes;
 
-    /** @var callable  */
+    /** @var callable */
     private $success;
 
-    /** @var callable  */
+    /** @var callable */
     private $statusCode;
 
-    /** @var callable  */
+    /** @var callable */
     private $responseBody;
 
     public function __construct(callable $success, callable $statusCode, callable $responseBody, array $allowedResponseCodes = [200])

@@ -17,11 +17,9 @@
 
 declare(strict_types=1);
 
-
 use HF\ApiClient\Query\Query;
 
 /** @var Query $query */
-
 $customerId = $params[0] ?? null;
 
 return [

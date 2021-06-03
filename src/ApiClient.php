@@ -146,8 +146,8 @@ final class ApiClient
      * @param $params
      *
      * @return mixed
-     * @throws IdentityProviderException
      *
+     * @throws IdentityProviderException
      */
     public function __call($name, $params)
     {
@@ -160,7 +160,7 @@ final class ApiClient
         if (! \file_exists($path)) {
             throw new \Exception(\sprintf('\'%s\' does not exist', $name));
         }
-        /** @var Query $query */
+        /* @var Query $query */
         if ($params[0] instanceof Query) {
             $query = $params[0];
         } else {
@@ -230,8 +230,8 @@ final class ApiClient
     }
 
     private $success;
-    public  $statusCode;
-    public  $responseBody;
+    public $statusCode;
+    public $responseBody;
 
     public function isSuccess(): bool
     {
@@ -292,11 +292,11 @@ final class ApiClient
     {
         if (null === $this->provider) {
             $this->provider = new PLHWProvider([
-                'clientId'                => $this->options->getClientId(),
-                'clientSecret'            => $this->options->getClientSecret(),
-                'redirectUri'             => $this->options->getRedirectUri(),
-                'urlAuthorize'            => $this->options->getAuthorizeUri(),
-                'urlAccessToken'          => $this->options->getTokenUri(),
+                'clientId' => $this->options->getClientId(),
+                'clientSecret' => $this->options->getClientSecret(),
+                'redirectUri' => $this->options->getRedirectUri(),
+                'urlAuthorize' => $this->options->getAuthorizeUri(),
+                'urlAccessToken' => $this->options->getTokenUri(),
                 'urlResourceOwnerDetails' => $this->options->getResourceOwnerDetailsUri(),
             ]);
         }
@@ -309,7 +309,7 @@ final class ApiClient
         if (null === $this->cache) {
             $this->cache = StorageFactory::factory([
                 'adapter' => [
-                    'name'      => 'filesystem',
+                    'name' => 'filesystem',
                     'dir_level' => 0,
                 ],
                 'plugins' => ['serializer'],

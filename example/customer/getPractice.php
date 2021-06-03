@@ -19,13 +19,12 @@ declare(strict_types=1);
 
 use HF\ApiClient\ApiClient;
 use HF\ApiClient\Exception\GatewayException;
-use HF\ApiClient\Query\Query;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$practiceId = $argv[1] ?? die('uuid required');
+$practiceId = $argv[1] ?? exit('uuid required');
 
 try {
     $results = $api->customer_getPractice($practiceId);
@@ -38,7 +37,7 @@ try {
 }
 
 if ($api->isSuccess()) {
-    print_r($results);
+    \print_r($results);
 } else {
     \printf("Error (%d)\n", $api->getStatusCode());
     \print_r($results);

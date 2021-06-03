@@ -20,9 +20,7 @@ declare(strict_types=1);
 use HF\ApiClient\Query\Query;
 
 /** @var Query $query */
-
 $practiceId = $params[0] ?? null;
-
 
 return [
     'url' => \sprintf('/customer/practices/%s', $practiceId),

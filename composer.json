@@ -18,7 +18,7 @@
   "require":      {
     "php": "^8.0",
     "beberlei/assert": "^3.3",
-    "laminas/laminas-cache": "^2.11.x-dev",
+    "laminas/laminas-cache": "^2.10.0",
     "laminas/laminas-http": "^2.14",
     "laminas/laminas-serializer": "^2.10",
     "league/oauth2-client": "^2.6",
@@ -42,7 +42,6 @@
     "laminas/laminas-cache-storage-adapter-zend-server": "*"
   },
   "require-dev":  {
-    "doctrine/common": "^2.7",
     "malukenho/docheader": "^0.1",
     "plhw/hf-cs-fixer-config": "^1.0",
     "roave/security-advisories": "dev-master"

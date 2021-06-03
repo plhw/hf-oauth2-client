@@ -42,7 +42,6 @@
     "laminas/laminas-cache-storage-adapter-zend-server": "*"
   },
   "require-dev":  {
-    "malukenho/docheader": "^0.1",
     "plhw/hf-cs-fixer-config": "^1.0",
     "roave/security-advisories": "dev-master"
   },
@@ -58,11 +57,9 @@
   },
   "scripts":      {
     "check":  [
-      "@cs",
-      "@header"
+      "@cs"
     ],
     "cs":     "php-cs-fixer fix -v --diff --dry-run",
-    "cs-fix": "php-cs-fixer fix -v --diff",
-    "header": "docheader check src"
+    "cs-fix": "php-cs-fixer fix -v --diff"
   }
 }

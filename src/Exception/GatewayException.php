@@ -25,4 +25,9 @@ final class GatewayException extends \RuntimeException
     {
         return new self('The backend responded with a malformed payload');
     }
+
+    public static function couldNotDecodeJson(string $reason): GatewayException
+    {
+        return new self('Json Decoding error: '. $reason);
+    }
 }

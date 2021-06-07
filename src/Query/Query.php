@@ -20,20 +20,26 @@ declare(strict_types=1);
 namespace HF\ApiClient\Query;
 
 use Assert\Assertion;
+use Assert\InvalidArgumentException;
 use Laminas\Http\Header\AcceptLanguage;
 use Laminas\Http\Header\UserAgent;
 use PackageVersions\Versions;
 
 class Query
 {
+    private $resource = '';
+    private $method = 'GET';
     private $filter = [];
     private $page = [];
     private $include = [];
     private $sort = [];
     private $other = [];
+
     private $headers = [
         'Accept' => 'application/json',
     ];
+
+    private $payload;
 
     public static $language = 'nl';
 
@@ -49,7 +55,7 @@ class Query
     public function withParam(string $property, $value): Query
     {
         if (! \is_scalar($value) && ! \is_array($value)) {
-            throw new \UnexpectedValueException('Value must be scalar or array');
+            throw new InvalidArgumentException('Value must be scalar or array', 0);
         }
 
         $query = clone $this;
@@ -57,6 +63,63 @@ class Query
         $query->other[$property] = $value;
 
         return $query;
+    }
+
+    public function withPayload($payload): Query
+    {
+        if (! \is_array($payload)) {
+            throw new \UnexpectedValueException('Value must be array');
+        }
+
+        $query = clone $this;
+
+        $query->payload = $payload;
+
+        return $query;
+    }
+
+    public function withoutParam(string $property): Query
+    {
+        $query = clone $this;
+
+        if (isset($query->other[$property])) {
+            unset($query->other[$property]);
+        }
+
+        return $query;
+    }
+
+    public function param(string $property)
+    {
+        return $this->other[$property] ?? null;
+    }
+
+    public function withMethod(string $method): Query
+    {
+        $query = clone $this;
+
+        $query->method = $method;
+
+        return $query;
+    }
+
+    public function method(): string
+    {
+        return $this->method;
+    }
+
+    public function withResource(string $resource): Query
+    {
+        $query = clone $this;
+
+        $query->resource = $resource;
+
+        return $query;
+    }
+
+    public function payload(): ?array
+    {
+        return $this->payload;
     }
 
     public function withFilter(string $property, $value): Query
@@ -121,13 +184,13 @@ class Query
         return $query;
     }
 
-    public function query(): string
+    public function url(): string
     {
         $query = $this->toQueryParams();
 
         $queryString = \http_build_query($query, '', '&', PHP_QUERY_RFC3986);
 
-        return $queryString ? '?' . $queryString : '';
+        return $this->resource . ($queryString ? '?' . $queryString : '');
     }
 
     public function toQueryParams(): array
@@ -161,7 +224,7 @@ class Query
 
     public function __toString(): string
     {
-        return $this->query();
+        return $this->url();
     }
 
     public function headers(): array

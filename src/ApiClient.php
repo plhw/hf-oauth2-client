@@ -19,36 +19,43 @@ declare(strict_types=1);
 
 namespace HF\ApiClient;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
+use HF\ApiClient\Middleware\AccessTokenMiddleware;
+use HF\ApiClient\Middleware\CaptureResultMiddleware;
+use HF\ApiClient\Middleware\ErrorResponseMiddleware;
+use HF\ApiClient\Middleware\ExtractApiResourcesMiddleware;
 use HF\ApiClient\Options\Options;
-use HF\ApiClient\Provider\PLHWProvider;
 use HF\ApiClient\Query\Query;
+use HF\ApiClient\Stream\JsonStream;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Cache\StorageFactory;
-use Laminas\Stdlib\ArrayUtils;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
-use Uhura\Uhura;
 
 /**
  * Class ApiClient.
  *
- * @method array commerce_submitSandalinosComposition(Query $query, string $storeId)
- * @method array commerce_retrieveSandalinosCompositionByCode(Query $query, string $storeId)
- * @method array commerce_getArticleGroupOfStore(?Query $query, string $storeId, string $articleGroupId)
- * @method array commerce_getProductGroupOfCatalogue(?Query $query, string $storeId, string $catalogueId, string $productGroupId)
- * @method array commerce_getProductOfProductGroup(?Query $query, string $storeId, string $catalogueId, string $productGroupId, string $productId)
- * @method array commerce_getStore(Query $query, string $storeId)
- * @method array commerce_listArticleGroupsOfStore(?Query $query, string $storeId)
- * @method array commerce_listProductGroupsOfCatalogue(?Query $query, string $storeId, string $catalogueId)
- * @method array commerce_listProductsOfProductGroup(?Query $query, string $storeId, string $catalogueId, string $productGroupId)
- * @method array commerce_listCataloguesOfStore(?Query $query, string $storeId)
+ * @method array commerce_submitSandalinosComposition(Query $query)
+ * @method array commerce_retrieveSandalinosCompositionByCode(Query $query)
+ * @method array commerce_getArticleGroupOfStore(?Query $query)
+ * @method array commerce_getProductGroupOfCatalogue(?Query $query)
+ * @method array commerce_getProductOfProductGroup(?Query $query)
+ * @method array commerce_getStore(Query $query)
+ * @method array commerce_listArticleGroupsOfStore(?Query $query)
+ * @method array commerce_listProductGroupsOfCatalogue(?Query $query)
+ * @method array commerce_listProductsOfProductGroup(?Query $query)
+ * @method array commerce_listCataloguesOfStore(?Query $query)
  * @method array commerce_listStores(?Query $query)
  * @method array customer_listPosAroundCoordinate(Query $query);
  * @method array customer_queryCustomers(Query $query);
  * @method array customer_getCustomer($customerId);
  * @method array customer_queryPractices(Query $query);
  * @method array customer_getPractice($practiceId);
- * @method array dossier_getAttachmentsOfDossier(?Query $query, string $dossierId);
+ * @method array dossier_getAttachmentsOfDossier(?Query $query);
  */
 final class ApiClient
 {
@@ -58,14 +65,24 @@ final class ApiClient
     private $options;
 
     /**
-     * @var
+     * @var int|null
      */
-    private $provider;
+    private $statusCode;
 
     /**
-     * @var Uhura
+     * @var string|null
      */
-    private $api;
+    private $responseBody;
+
+    /**
+     * @var Client
+     */
+    private $http;
+
+    /**
+     * @var ResponseHandler
+     */
+    private $responseHandler;
 
     /**
      * @var StorageInterface
@@ -107,36 +124,32 @@ final class ApiClient
      */
     private $accessToken;
 
-    /**
-     * @var string
-     */
-    private $lastResponseBody = null;
-
-    private function __construct(Options $options)
+    private function __construct(ClientInterface $client, StorageInterface $cache = null, Options $options, $stack)
     {
+        $this->http = $client;
         $this->options = $options;
+        $this->cache = $cache;
+
+        $stack->push(new CaptureResultMiddleware($this->statusCode, $this->responseBody));
+        $stack->push(new ExtractApiResourcesMiddleware($this->cachedResources));
     }
 
     public static function createClient(Options $options, StorageInterface $cache = null): self
     {
-        $new = new static($options);
+        $stack = HandlerStack::create();
+        $stack->push(new ErrorResponseMiddleware());
 
-        $new->api = new Uhura($options->getServerUri());
+        $client = new Client(['base_uri' => $options->getServerUri(), 'handler' => $stack]);
 
-        $new->api->useResponseHandler(new ResponseHandler(
-            function (bool $success) use ($new): void {
-                $new->success = $success;
-            },
-            function (int $statusCode) use ($new): void {
-                $new->statusCode = $statusCode;
-            },
-            function (string $responseBody) use ($new): void {
-                $new->responseBody = $responseBody;
-            }));
+        $stack->push(Middleware::mapResponse(function (Response $response) {
+            $jsonStream = new JsonStream($response->getBody());
 
-        $new->cache = $cache;
+            return $response->withBody($jsonStream);
+        }));
 
-        return $new;
+        $stack->push(new AccessTokenMiddleware($options, $cache));
+
+        return new static($client, $cache, $options, $stack);
     }
 
     /**
@@ -151,91 +164,64 @@ final class ApiClient
      */
     public function __call($name, $params)
     {
-        if ($accessToken = $this->getAccessToken($this->options->getGrantType(), $this->options->getScope())) {
-            $this->api->authenticate(\sprintf('Bearer %s', $accessToken->getToken()));
-        }
+        $this->statusCode = null;
+        $this->lastResponseBody = null;
 
         $path = __DIR__ . '/../data/v1/' . $name . '.php';
 
         if (! \file_exists($path)) {
             throw new \Exception(\sprintf('\'%s\' does not exist', $name));
         }
-        /* @var Query $query */
-        if ($params[0] instanceof Query) {
-            $query = $params[0];
-        } else {
-            $query = Query::create();
-        }
 
-        $apiParams = include $path;
+        /** $query Query */
+        [$query] = $params;
 
-        $resourceParts = \explode('/', $apiParams['url']);
-        $resourceParts = \array_filter($resourceParts);
+        // modifies the query
 
-        $resourcePart = \array_shift($resourceParts);
-        $resource = $this->api->{$resourcePart};
+        /** $query Query */
+        $query = include $path;
 
-        while (\count($resourceParts)) {
-            $resourcePart = \array_shift($resourceParts);
-            $resource = $resource->{$resourcePart};
-        }
+        return $this->request($query);
+    }
 
-        /* @var \GuzzleHttp\Psr7\Response $response */
+    private function request(Query $query)
+    {
         try {
-            switch ($apiParams['method']) {
-                case 'GET':
-                    $result = $resource->get($apiParams['query']);
-                    break;
-            }
+            /* @var \GuzzleHttp\Psr7\Response $response */
+            $response = $this->http->request($query->method(), $query->url(), $this->buildOptionsForRequest($query));
+
+            return $response->getBody()->jsonSerialize();
         } catch (\GuzzleHttp\Exception\ClientException $clientException) {
             switch ($clientException->getCode()) {
                 case 401:
+                    // invalidate token and try again
                     $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
 
-                    // call again
-                    \call_user_func_array([$this, $name], $params);
+                    \call_user_func_array([$this, 'request'], $query);
                     break;
                 default:
                     throw $clientException;
             }
         }
-
-        if (isset($result['data'])) {
-            if (isset($result['data']['id'])) {
-                $resources = [$result['data']];
-            } else {
-                $resources = $result['data'];
-            }
-
-            foreach ($resources as $resource) {
-                $cachedResource = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
-                $cachedResource = ArrayUtils::merge($cachedResource, $resource);
-                unset($cachedResource['id'], $cachedResource['type']);
-                $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
-            }
-        }
-
-        if (isset($result['included'])) {
-            foreach ($result['included'] as $resource) {
-                $cachedResource = $this->cachedResources[$resource['type']][$resource['id']] ?? [];
-                $cachedResource = ArrayUtils::merge($cachedResource, $resource);
-                unset($cachedResource['id'], $cachedResource['type']);
-                $this->cachedResources[$resource['type']][$resource['id']] = $cachedResource;
-            }
-        }
-
-        $this->isSuccess = true;
-
-        return $result;
     }
 
-    private $success;
-    public $statusCode;
-    public $responseBody;
+    private function buildOptionsForRequest(Query $query)
+    {
+        $options = [];
+
+        $options['headers'] = $query->headers();
+
+        if ($query->payload()) {
+            $key = 'GET' === $query->method() ? 'query' : 'json';
+            $options[$key] = $query->payload();
+        }
+
+        return $options;
+    }
 
     public function isSuccess(): bool
     {
-        return (bool) $this->success;
+        return \in_array($this->statusCode, [200, 202], true);
     }
 
     public function getStatusCode(): int
@@ -248,60 +234,12 @@ final class ApiClient
         return $this->responseBody;
     }
 
-    private function getAccessToken(
-        string $grant,
-        string $scope
-    ): ?AccessToken {
-        if (null === $this->accessToken || $this->accessToken->hasExpired()) {
-            $provider = $this->createOAuth2Provider();
-
-            $cache = $this->getCacheStorage();
-            $cacheKey = \sha1($grant . \serialize($scope));
-
-            // try to get a token from the cache
-            $accessToken = $cache->getItem($cacheKey, $success);
-
-            if (null === $accessToken || ! $success || $accessToken->hasExpired()) {
-                // try to get a new access token
-                $accessToken = $provider->getAccessToken($grant, [
-                    'scope' => $scope,
-                ]);
-
-                $cache->setItem($cacheKey, $accessToken);
-            }
-
-            $this->accessToken = $accessToken;
-        }
-
-        return $this->accessToken;
-    }
-
-    private function invalidateAccessToken(
-        string $grant,
-        string $scope
-    ): void {
-        $this->accessToken = null;
-
+    private function invalidateAccessToken(string $grant, string $scope): void
+    {
         $cache = $this->getCacheStorage();
         $cacheKey = \sha1($grant . \serialize($scope));
 
         $cache->removeItem($cacheKey);
-    }
-
-    private function createOAuth2Provider(): PLHWProvider
-    {
-        if (null === $this->provider) {
-            $this->provider = new PLHWProvider([
-                'clientId' => $this->options->getClientId(),
-                'clientSecret' => $this->options->getClientSecret(),
-                'redirectUri' => $this->options->getRedirectUri(),
-                'urlAuthorize' => $this->options->getAuthorizeUri(),
-                'urlAccessToken' => $this->options->getTokenUri(),
-                'urlResourceOwnerDetails' => $this->options->getResourceOwnerDetailsUri(),
-            ]);
-        }
-
-        return $this->provider;
     }
 
     private function getCacheStorage(): StorageInterface

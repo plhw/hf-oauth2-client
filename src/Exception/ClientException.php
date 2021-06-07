@@ -17,16 +17,12 @@
 
 declare(strict_types=1);
 
-namespace HF\ApiClient;
+namespace HF\ApiClient\Exception;
 
-use Psr\Http\Message\ResponseInterface as Response;
-
-class ResponseHandler
+final class ClientException extends \RuntimeException
 {
-    public function handle(Response $response)
+    public static function couldNotGetValidAccessToken(string $message): ClientException
     {
-        $contents = $response->getBody()->getContents();
-
-        return \json_decode($contents, true);
+        return new self(\sprintf('Authentication failed \'%s\'', $message));
     }
 }

@@ -17,29 +17,21 @@
 
 declare(strict_types=1);
 
-/** @var \HF\ApiClient\Query\Query $query */
-$query = $params[0] ?? \HF\ApiClient\Query\Query::create();
-$storeId = $params[1] ?? null;
-$catalogueId = $params[2] ?? null;
-$productGroupId = $params[3] ?? null;
+use Assert\Assert;
+use HF\ApiClient\Query\Query;
 
-if (! $storeId) {
-    throw new \Exception('You must provide a storeId');
-}
-if (! $catalogueId) {
-    throw new \Exception('You must provide a catalogueId');
-}
-if (! $productGroupId) {
-    throw new \Exception('You must provide a productGroupId');
-}
+/** @var Query $query */
+$storeId = $query->param('storeId');
+$catalogueId = $query->param('catalogueId');
+$productGroupId = $query->param('productGroupId');
 
-return [
-    'url' => \sprintf('/commerce/stores/%s/catalogues/%s/product-groups/%s/products', $storeId, $catalogueId, $productGroupId),
-    'query' => $query->toQueryParams(),
-    'method' => 'GET',
-    'header' => $query->headers(),
-    'response' => [
-        'format' => 'json',
-        'valid_codes' => ['200'],
-    ],
-];
+Assert::that($storeId)->uuid('storeId "%s" is not a valid UUID.');
+Assert::that($catalogueId)->uuid('catalogueId "%s" is not a valid UUID.');
+Assert::that($productGroupId)->uuid('productGroupId "%s" is not a valid UUID.');
+
+/* @var \HF\ApiClient\Query\Query $query */
+return $query
+    ->withResource(\sprintf('/commerce/stores/%s/catalogues/%s/product-groups/%s/products', $storeId, $catalogueId, $productGroupId))
+    ->withoutParam('storeId')
+    ->withoutParam('catalogueId')
+    ->withoutParam('productGroupId');

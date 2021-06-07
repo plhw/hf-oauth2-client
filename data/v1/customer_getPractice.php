@@ -17,18 +17,14 @@
 
 declare(strict_types=1);
 
+use Assert\Assert;
 use HF\ApiClient\Query\Query;
 
 /** @var Query $query */
-$practiceId = $params[0] ?? null;
+$practiceId = $query->param('practiceId');
 
-return [
-    'url' => \sprintf('/customer/practices/%s', $practiceId),
-    'query' => $query->toQueryParams(),
-    'method' => 'GET',
-    'header' => $query->headers(),
-    'response' => [
-        'format' => 'json',
-        'valid_codes' => ['200'],
-    ],
-];
+Assert::that($practiceId)->uuid('practiceId "%s" is not a valid UUID.');
+
+/* @var \HF\ApiClient\Query\Query $query */
+return $query
+    ->withResource(\sprintf('/customer/practices/%s', $practiceId));

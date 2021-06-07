@@ -17,16 +17,6 @@
 
 declare(strict_types=1);
 
-/** @var \HF\ApiClient\Query\Query $query */
-$query = $params[0] ?? \HF\ApiClient\Query\Query::create();
-
-return [
-    'url' => '/commerce/stores',
-    'query' => $query->toQueryParams(),
-    'method' => 'GET',
-    'header' => $query->headers(),
-    'response' => [
-        'format' => 'json',
-        'valid_codes' => ['200'],
-    ],
-];
+/* @var \HF\ApiClient\Query\Query $query */
+return $query
+    ->withResource('/commerce/stores');

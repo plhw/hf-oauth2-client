@@ -17,21 +17,15 @@
 
 declare(strict_types=1);
 
-/** @var \HF\ApiClient\Query\Query $query */
-$query = $params[0] ?? \HF\ApiClient\Query\Query::create();
-$storeId = $params[1] ?? null;
+use Assert\Assert;
+use HF\ApiClient\Query\Query;
 
-if (! $storeId) {
-    throw new \Exception('You must provide a storeId');
-}
+/** @var Query $query */
+$storeId = $query->param('storeId');
 
-return [
-    'url' => \sprintf('/commerce/stores/%s/article-groups', $storeId),
-    'query' => $query->toQueryParams(),
-    'method' => 'GET',
-    'header' => $query->headers(),
-    'response' => [
-        'format' => 'json',
-        'valid_codes' => ['200'],
-    ],
-];
+Assert::that($storeId)->uuid('storeId "%s" is not a valid UUID.');
+
+/* @var \HF\ApiClient\Query\Query $query */
+return $query
+    ->withResource(\sprintf('/commerce/stores/%s/article-groups', $storeId))
+    ->withoutParam('storeId');

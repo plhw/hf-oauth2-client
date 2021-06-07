@@ -39,23 +39,27 @@ use League\OAuth2\Client\Token\AccessToken;
 /**
  * Class ApiClient.
  *
- * @method array commerce_submitSandalinosComposition(Query $query)
- * @method array commerce_retrieveSandalinosCompositionByCode(Query $query)
  * @method array commerce_getArticleGroupOfStore(?Query $query)
  * @method array commerce_getProductGroupOfCatalogue(?Query $query)
  * @method array commerce_getProductOfProductGroup(?Query $query)
  * @method array commerce_getStore(Query $query)
  * @method array commerce_listArticleGroupsOfStore(?Query $query)
+ * @method array commerce_listCataloguesOfStore(?Query $query)
  * @method array commerce_listProductGroupsOfCatalogue(?Query $query)
  * @method array commerce_listProductsOfProductGroup(?Query $query)
- * @method array commerce_listCataloguesOfStore(?Query $query)
  * @method array commerce_listStores(?Query $query)
+ * @method array commerce_retrieveSandalinosCompositionByCode(Query $query)
+ * @method array commerce_submitSandalinosComposition(Query $query)
+ * @method array customer_getCustomer($customerId);
+ * @method array customer_getPractice($practiceId);
  * @method array customer_listPosAroundCoordinate(Query $query);
  * @method array customer_queryCustomers(Query $query);
- * @method array customer_getCustomer($customerId);
  * @method array customer_queryPractices(Query $query);
- * @method array customer_getPractice($practiceId);
  * @method array dossier_getAttachmentsOfDossier(?Query $query);
+ * @method array dossier_getDossier(?Query $query);
+ * @method array dossier_getOrder(?Query $query);
+ * @method array dossier_queryDossiers(?Query $query);
+ * @method array dossier_queryOrders(?Query $query);
  */
 final class ApiClient
 {

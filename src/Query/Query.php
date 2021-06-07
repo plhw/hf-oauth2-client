@@ -54,8 +54,8 @@ class Query
 
     public function withParam(string $property, $value): Query
     {
-        if (! \is_scalar($value) && ! \is_array($value)) {
-            throw new InvalidArgumentException('Value must be scalar or array', 0);
+        if (! \is_scalar($value) && ! \is_array($value) && ! \is_null($value)) {
+            throw new InvalidArgumentException('Value must be scalar, array or null', 0);
         }
 
         $query = clone $this;

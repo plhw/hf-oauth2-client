@@ -21,14 +21,11 @@ use HF\ApiClient\ApiClient;
 use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
 try {
-
-
     $results = $api->dossier_queryDossiers(
         Query::create()
             ->withIncluded('orders') // include releationships dossier.orders (resource "dossier/order")

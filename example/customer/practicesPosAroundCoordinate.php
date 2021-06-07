@@ -25,7 +25,6 @@ use HF\ApiClient\Query\Query;
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-
 try {
     $results = $api->customer_listPosAroundCoordinate(
         Query::create()
@@ -59,4 +58,3 @@ try {
         }
     }
 }
-

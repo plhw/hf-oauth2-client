@@ -21,17 +21,23 @@ use HF\ApiClient\ApiClient;
 use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
+use Ramsey\Uuid\Uuid;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$practiceId = $argv[1] ?? null;
+$orderLeadId = $argv[1] ?? (string) Uuid::uuid4();
 
-$query = Query::create()
-    ->withParam('practiceId', $practiceId);
+$payload = [
+'orderId' => (string) Uuid::uuid4(),
+];
 
 try {
-    $results = $api->customer_getPractice($query);
+    $result = $api->customer_submitOrderLead(
+        Query::create()
+            ->withParam('orderLeadId', $orderLeadId)
+            ->withPayload($payload)
+    );
 } catch (ClientException $e) {
     \printf("%s\n\n", $e->getMessage());
     exit();
@@ -44,7 +50,7 @@ try {
 } finally {
     if ($api->isSuccess()) {
         // do something with $results (which is the parsed response object)
-        \var_dump($results);
+        \var_dump($result);
 
         // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
         \var_dump($api->cachedResources);

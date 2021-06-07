@@ -21,53 +21,47 @@ declare(strict_types=1);
 /** @var $cache StorageInterface */
 require_once __DIR__ . '/../setup.php';
 
+use Assert\Assert;
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
 use Laminas\Cache\Storage\StorageInterface;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 try {
-    /**
-     * Assuming you have a storeId, proceed to setp two.
-     *
-     * Since we have a cache setup (via '../setup.php' we will use that
-     */
-    $cacheKey = \sha1('__FILE__');
+    $code = $argv[1] ?? null;
 
-    // try to get $storeId, $catalogueId from the cache
-    @[$storeId] = $cache->getItem($cacheKey, $success);
+    Assert::that($code)->notEmpty('Enter a code as argument');
 
-    if (! ($argv[1] ?? false)) {
-        exit('Give snd code as argument');
-    }
-
-    if ((null === $storeId) || ! $success) {
-        $storeQueryResult = $api->commerce_listStores(
-            Query::create()->withFilter('query', 'shop.PLHW')->withPage(1, 1)
-        );
-
-        $storeId = $storeQueryResult['data'][0]['id'] ?? '';
-
-        $cache->setItem($cacheKey, [
-            $storeId,
-        ]);
-    }
-
-    $result = $api->commerce_retrieveSandalinosCompositionByCode(
+    $api->commerce_listStores(
         Query::create()
-            ->withParam('code', $argv[1]),
-        $storeId
+            ->withFilter('query', 'shop.PLHW')
+            ->withPage(1, 1)
     );
 
-    if ($result && $api->isSuccess()) {
-        \print_r($result);
-    } else {
-        \print_r($api->getLastResponseBody());
-    }
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+    $storeId = \reset($api->cachedResources['commerce/store'])['id'];
+
+    $results = $api->commerce_retrieveSandalinosCompositionByCode(
+        Query::create()
+            ->withParam('storeId', $storeId)
+            ->withParam('code', $code),
+        $storeId
+    );
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
+    exit();
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($results);
+
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
+    }
 }

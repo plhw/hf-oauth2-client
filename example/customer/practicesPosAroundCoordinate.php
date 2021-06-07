@@ -18,37 +18,45 @@
 declare(strict_types=1);
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$query = Query::create()
-    ->withFilter('around', '52.3629882,4.8593175')
-    ->withFilter('distance', 50000)
-    ->withFilter('product', 'Sandalen')
-    ->withPage(1, 3)
-    ->withSort('name', false);
 
 try {
-    $results = $api->customer_listPosAroundCoordinate($query);
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+    $results = $api->customer_listPosAroundCoordinate(
+        Query::create()
+            ->withFilter('around', '52.3629882,4.8593175')
+            ->withFilter('distance', 50000)
+            ->withFilter('product', 'Sandalen')
+            ->withPage(1, 3)
+            ->withSort('name', false)
+    );
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
     exit();
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($results);
+
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
+
+        foreach ($results['data'] as $result) {
+            \printf("Practice %s on %skm\n", $result['attributes']['name'],
+                \round(($result['attributes']['distance'] / 100)) / 10);
+            \printf(" - sells %s\n", \implode(', ', $result['attributes']['products']));
+        }
+    }
 }
 
-if ($api->isSuccess()) {
-    foreach ($results['data'] as $result) {
-        \printf("Practice %s on %skm\n", $result['attributes']['name'],
-            \round(($result['attributes']['distance'] / 100)) / 10);
-        \printf(" - sells %s\n", \implode(', ', $result['attributes']['products']));
-    }
-} else {
-    \printf("Error (%d)\n", $api->getStatusCode());
-    \print_r($results);
-}

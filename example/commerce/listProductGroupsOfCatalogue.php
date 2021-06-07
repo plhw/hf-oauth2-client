@@ -33,21 +33,29 @@ try {
         ->withFilter('query', 'shop.PLHW')
         ->withPage(1, 1);
 
-    $results = $api->commerce_listStores($query);
-    $storeId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listStores($query);
+
+    // first result
+    $storeId = \reset($api->cachedResources['commerce/store'])['id'];
 
     // now we search for a specific catalogue within that store
     $query = Query::create()
         ->withFilter('query', 'Sandalinos Catalogue')
+        ->withParam('storeId', $storeId)
         ->withPage(1, 1);
 
-    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
-    $catalogueId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listCataloguesOfStore($query);
 
-    // once we have the storeId and the catalogue id, we can get list the product groups
+    // first result
+    $catalogueId = \reset($api->cachedResources['commerce/catalogue'])['id'];
+
     $query = Query::create()
+        ->withParam('storeId', $storeId)
+        ->withParam('catalogueId', $catalogueId)
         ->withSort('code', true)
         ->withPage(1, 1000);
+
+    $api->commerce_listProductGroupsOfCatalogue($query);
 
     $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
 } catch (IdentityProviderException $e) {

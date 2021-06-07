@@ -22,98 +22,92 @@ declare(strict_types=1);
 require_once __DIR__ . '/../setup.php';
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
 use Laminas\Cache\Storage\StorageInterface;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 try {
     /**
      * First task is to get a storeId and catalogueId and the 'root' productGroup for the Sandalinos
      * products. We do this via queries by name since these id's are different per deployment environment.
-     *
-     * Since we have a cache setup (via '../setup.php' we will use that
      */
-    $cacheKey = \sha1('id-key');
+    $storeQueryResult = $api->commerce_listStores(
+        Query::create()
+            ->withFilter('query', 'shop.PLHW')
+            ->withPage(1, 1)
+    );
 
-    // try to get $storeId, $catalogueId from the cache
-    @[
-        $storeId,
-        $catalogueId,
-        $sndProductGroupId,
-        $sndShaftsProductGroupId,
-        $sndCoverProductGroupId,
-        $sndFootbedProductGroupId,
-        $sndMidsoleProductGroupId,
-        $sndOutsoleProductGroupId] = $cache->getItem($cacheKey, $success);
+    $storeId = $storeQueryResult['data'][0]['id'] ?? '';
 
-    if ((null === $storeId || null === $catalogueId || null === $sndProductGroupId) || ! $success) {
-        $storeQueryResult = $api->commerce_listStores(
-            Query::create()->withFilter('query', 'shop.PLHW')->withPage(1, 1)
-        );
+    $catalogueQueryResult = $api->commerce_listCataloguesOfStore(
+        Query::create()
+            ->withFilter('query', 'Sandalinos Catalogue')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+    );
 
-        $storeId = $storeQueryResult['data'][0]['id'] ?? '';
+    $catalogueId = $catalogueQueryResult['data'][0]['id'] ?? '';
 
-        $catalogueQueryResult = $api->commerce_listCataloguesOfStore(
-            Query::create()->withFilter('query', 'Sandalinos Catalogue')->withPage(1, 1),
-            $storeId
-        );
+    $sndProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
 
-        $catalogueId = $catalogueQueryResult['data'][0]['id'] ?? '';
+    $sndProductGroupId = $sndProductGroupQueryResult['data'][0]['id'] ?? '';
 
-        $sndProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'S:CM')->withPage(1, 1),
-            $storeId,
-            $catalogueId
-        );
-        $sndProductGroupId = $sndProductGroupQueryResult['data'][0]['id'] ?? '';
+    $sndShaftsProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM:SH')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
 
-        $sndShaftsProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'S:CM:SH')->withPage(1, 1),
-            $storeId,
-            $catalogueId
-        );
-        $sndShaftsProductGroupId = $sndShaftsProductGroupQueryResult['data'][0]['id'] ?? '';
+    $sndShaftsProductGroupId = $sndShaftsProductGroupQueryResult['data'][0]['id'] ?? '';
 
-        $sndCoverProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'S:CM:CV')->withPage(1, 1),
-            $storeId,
-            $catalogueId
-        );
-        $sndCoverProductGroupId = $sndCoverProductGroupQueryResult['data'][0]['id'] ?? '';
+    $sndCoverProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM:CV')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
 
-        $sndFootbedProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'S:CM:FB')->withPage(1, 1),
-            $storeId,
-            $catalogueId
-        );
-        $sndFootbedProductGroupId = $sndFootbedProductGroupQueryResult['data'][0]['id'] ?? '';
+    $sndCoverProductGroupId = $sndCoverProductGroupQueryResult['data'][0]['id'] ?? '';
 
-        $sndMidsoleProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'S:CM:MS')->withPage(1, 1),
-            $storeId,
-            $catalogueId
-        );
-        $sndMidsoleProductGroupId = $sndMidsoleProductGroupQueryResult['data'][0]['id'] ?? '';
+    $sndFootbedProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM:FB')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
 
-        $sndOutsoleProductGroupId = $api->commerce_listProductGroupsOfCatalogue(
-            $query = Query::create()->withFilter('code', 'S:CM:OS')->withPage(1, 1),
-            $storeId,
-            $catalogueId
-        );
-        $sndOutsoleProductGroupId = $sndOutsoleProductGroupId['data'][0]['id'] ?? '';
+    $sndFootbedProductGroupId = $sndFootbedProductGroupQueryResult['data'][0]['id'] ?? '';
 
-        $cache->setItem($cacheKey, [
-            $storeId,
-            $catalogueId,
-            $sndProductGroupId,
-            $sndShaftsProductGroupId,
-            $sndCoverProductGroupId,
-            $sndFootbedProductGroupId,
-            $sndMidsoleProductGroupId,
-            $sndOutsoleProductGroupId,
-        ]);
-    }
+    $sndMidsoleProductGroupQueryResult = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM:MS')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
+
+    $sndMidsoleProductGroupId = $sndMidsoleProductGroupQueryResult['data'][0]['id'] ?? '';
+
+    $sndOutsoleProductGroupId = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM:OS')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
+
+    $sndOutsoleProductGroupId = $sndOutsoleProductGroupId['data'][0]['id'] ?? '';
 
     \printf("We have collected these id's to work with '%s'\n\n", \implode("', '", [
         $storeId,
@@ -134,19 +128,34 @@ try {
      * we're at it we'll include the any assigned values (which will include its gender, but also the model code)
      */
     $results = $api->commerce_listProductsOfProductGroup(
-        $query = Query::create()
+        Query::create()
             ->withFilter('assignedValues', [
                 ['attributeCode' => 'gender', 'value' => 'female'],
                 ['attributeCode' => 'model', 'available' => true],
             ])
             ->withIncluded('assigned-values.attribute')
-            ->withSort('code', true),
-        $storeId,
-        $catalogueId,
-        $sndProductGroupId
+            ->withSort('code', true)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+            ->withParam('productGroupId', $sndProductGroupId)
     );
-
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
+} catch (GatewayException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    \printf('%s', $api->getLastResponseBody());
+    exit();
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
     if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        // var_dump($results);
+
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        // var_dump($api->cachedResources);
+
         \printf("\nLADIES MODELS\n\n");
 
         // loop over the loaded product(s)
@@ -191,72 +200,5 @@ try {
                 }
             }
         }
-    } else {
-        \printf("Error (%d)\n", $api->getStatusCode());
-        \print_r($results);
     }
-
-    /**
-     * Step 3.
-     *
-     * Since we now have the correct id's we'll be able to query 'products' linked to that ProductGroup
-     */
-    $query = \HF\ApiClient\Query\Query::create()
-        ->withFilter('assignedValues', [
-        ])
-        ->withIncluded('assigned-values.attribute');
-
-    $results = $api->commerce_listProductsOfProductGroup(
-        $query = Query::create()
-            ->withFilter('assignedValues', [
-                ['attributeCode' => 'model', 'value' => 'anna', 'available' => true],
-                ['attributeCode' => 'color', 'available' => true],
-                ['attributeCode' => 'material', 'available' => true],
-            ])
-            ->withIncluded('assigned-values.attribute')
-            ->withSort('code', true),
-        $storeId,
-        $catalogueId,
-        $sndShaftsProductGroupId
-    );
-
-    if ($api->isSuccess()) {
-        \printf("\nPRODUCT VARIANTS FOR MODEL\n\n");
-
-        // loop over the loaded product(s)
-        foreach ($results['data'] as $key => $product) {
-            \printf("- %s (%s) (%s)\n", $product['attributes']['description'], $product['attributes']['code'], $key + 1);
-
-            // loop over the assigned_values for a product (one-to-many)
-            // we'll extract the type and id from data inside the loop
-            foreach ($product['relationships']['assigned-values']['data'] as ['type' => $type, 'id' => $id]) {
-                // get assigned value resource
-                $assignedValue = $api->cachedResources[$type][$id];
-
-                // a one-2-one relationship exists between an assignedValue and an attribute resource, therefore type and id
-                // extraction is a little different (not an array)
-                ['type' => $type, 'id' => $id] = $assignedValue['relationships']['attribute']['data'];
-
-                // get assigned value attribute resource
-                $attribute = $api->cachedResources[$type][$id];
-
-                \printf(
-                    " - ATTR: %s (%s) %s (%s)\n",
-                    $attribute['attributes']['label'],
-                    $attribute['attributes']['code'],
-                    $assignedValue['attributes']['label'],
-                    $assignedValue['attributes']['value']
-                );
-            }
-        }
-    } else {
-        \printf("Error (%d)\n", $api->getStatusCode());
-        \print_r($results);
-    }
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
-} catch (GatewayException $e) {
-    \printf("%s\n\n", $e->getMessage());
-    \printf('%s', $api->getLastResponseBody());
-    exit();
 }

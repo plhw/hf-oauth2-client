@@ -21,43 +21,45 @@ declare(strict_types=1);
 require_once __DIR__ . '/../setup.php';
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 try {
-    // we must get a storeId, which is different per environment.
-    // as an example i'll show how you can doe a search by name
-    $query = Query::create()
+    $results = $api->commerce_listStores(Query::create()
         ->withFilter('query', 'shop.PLHW')
-        ->withPage(1, 1);
+        ->withPage(1, 1));
 
-    $results = $api->commerce_listStores($query);
     $storeId = $results['data'][0]['id'] ?? '';
 
-    $query = Query::create()
+    $results = $api->commerce_listArticleGroupsOfStore(Query::create()
         ->withSort('ledgerNumber', true)
-        ->withPage(1, 1000);
-
-    $results = $api->commerce_listArticleGroupsOfStore($query, $storeId);
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+        ->withPage(1, 1000)
+        ->withParam('storeId', $storeId));
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
     exit();
-}
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($results);
 
-if ($api->isSuccess() && $results) {
-    foreach ($results['data'] as $result) {
-        \printf("ArticleGroup %s : %s (%s: %s)\n",
-            $result['id'],
-            $result['attributes']['description'],
-            $result['attributes']['ledger-number'],
-            $result['attributes']['code']
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
+
+        foreach ($results['data'] as $result) {
+            \printf("ArticleGroup %s : %s (%s: %s)\n",
+                $result['id'],
+                $result['attributes']['description'],
+                $result['attributes']['ledger-number'],
+                $result['attributes']['code']
             );
+        }
     }
-} else {
-    \printf("Error (%d)\n", $api->getStatusCode());
-    \print_r($results);
 }

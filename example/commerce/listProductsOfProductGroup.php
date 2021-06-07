@@ -33,29 +33,39 @@ try {
         ->withFilter('query', 'shop.PLHW')
         ->withPage(1, 1);
 
-    $results = $api->commerce_listStores($query);
-    $storeId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listStores($query);
+
+    // first result
+    $storeId = \reset($api->cachedResources['commerce/store'])['id'];
 
     // now we search for a specific catalogue within that store
     $query = Query::create()
         ->withFilter('query', 'Sandalinos Catalogue')
+        ->withParam('storeId', $storeId)
         ->withPage(1, 1);
 
-    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
-    $catalogueId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listCataloguesOfStore($query);
+
+    // first result
+    $catalogueId = \reset($api->cachedResources['commerce/catalogue'])['id'];
 
     $query = Query::create()
         ->withFilter('code', 'S:CM:CV') // bekleding!
+        ->withParam('storeId', $storeId)
+        ->withParam('catalogueId', $catalogueId)
         ->withPage(1, 1);
 
-    $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
+    $api->commerce_listProductGroupsOfCatalogue($query);
 
-    $productGroupId = $results['data'][0]['id'] ?? '';
+    $productGroupId = \reset($api->cachedResources['commerce/product-group/product-group'])['id'];
 
-    // once we have the storeId and the catalogue id, we can get list the product groups
-    $query = Query::create();
+    // once we have the storeId and the catalogueId and productGroupId, we can get list the product groups
+    $query = Query::create()
+        ->withParam('storeId', $storeId)
+        ->withParam('catalogueId', $catalogueId)
+        ->withParam('productGroupId', $productGroupId);
 
-    $results = $api->commerce_listProductsOfProductGroup($query, $storeId, $catalogueId, $productGroupId);
+    $results = $api->commerce_listProductsOfProductGroup($query);
 } catch (IdentityProviderException $e) {
     exit($e->getMessage());
 } catch (GatewayException $e) {
@@ -70,7 +80,7 @@ if ($api->isSuccess() && $results) {
             $result['id'],
             $result['attributes']['description'],
             $result['attributes']['code']
-            );
+        );
     }
 } else {
     \printf("Error (%d)\n", $api->getStatusCode());

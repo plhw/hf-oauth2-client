@@ -18,59 +18,80 @@
 declare(strict_types=1);
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
 try {
-    $query = Query::create()
-        ->withFilter('query', 'shop.PLHW')
-        ->withPage(1, 1);
+    $results = $api->commerce_listStores(
+        Query::create()
+            ->withFilter('query', 'shop.PLHW')
+            ->withPage(1, 1)
+    );
 
-    $results = $api->commerce_listStores($query);
     $storeId = $results['data'][0]['id'] ?? '';
 
-    // now we search for a specific catalogue within that store
-    $query = Query::create()
-        ->withFilter('query', 'Sandalinos Catalogue')
-        ->withPage(1, 1);
+    $results = $api->commerce_listCataloguesOfStore(
+        Query::create()
+            ->withFilter('query', 'Sandalinos Catalogue')
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+    );
 
-    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
     $catalogueId = $results['data'][0]['id'] ?? '';
 
-    $query = Query::create()
-        ->withFilter('code', 'S:CM:CV')// bekleding!
-        ->withPage(1, 1);
-
-    $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
+    $results = $api->commerce_listProductGroupsOfCatalogue(
+        Query::create()
+            ->withFilter('code', 'S:CM:CV')// bekleding!
+            ->withPage(1, 1)
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+    );
 
     $productGroupId = $results['data'][0]['id'] ?? '';
 
     // once we have a storeId, catalogue id, productgroup id, we can get a list of products
-    $results = $api->commerce_listProductsOfProductGroup(null, $storeId, $catalogueId, $productGroupId);
+    $results = $api->commerce_listProductsOfProductGroup(
+        Query::create()
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+            ->withParam('productGroupId', $productGroupId)
+    );
 
     // pick a random productId from the data (just for demo)
     $randomProductId = \array_rand(\array_flip(\array_column($results['data'], 'id')));
 
-    $results = $api->commerce_getProductOfProductGroup(null, $storeId, $catalogueId, $productGroupId, $randomProductId);
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+    $results = $api->commerce_getProductOfProductGroup(
+        Query::create()
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+            ->withParam('productGroupId', $productGroupId)
+            ->withParam('productId', $randomProductId)
+    );
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
     exit();
-}
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($results);
 
-if ($api->isSuccess() && $results) {
-    $result = $results['data'];
-    \printf("Product %s : %s (%s)\n",
-        $result['id'], $result['attributes']['description'],
-        $result['attributes']['code']
-    );
-} else {
-    \printf("Error (%d)\n", $api->getStatusCode());
-    \print_r($results);
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
+
+        $result = $results['data'];
+        \printf("Product %s : %s (%s)\n",
+            $result['id'], $result['attributes']['description'],
+            $result['attributes']['code']
+        );
+    }
 }

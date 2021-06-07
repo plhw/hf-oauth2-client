@@ -17,21 +17,15 @@
 
 declare(strict_types=1);
 
-/** @var \HF\ApiClient\Query\Query $query */
-$query = $params[0] ?? \HF\ApiClient\Query\Query::create();
-$dossierId = $params[1] ?? null;
+/* @var Query $query */
 
-if (! $dossierId) {
-    throw new \Exception('You must provide a dossierId');
-}
+use Assert\Assert;
+use HF\ApiClient\Query\Query;
 
-return [
-    'url' => \sprintf('/dossier/dossiers/%s/attachments%s', $dossierId, $query),
-    'query' => $query->toQueryParams(),
-    'method' => 'GET',
-    'header' => $query->headers(),
-    'response' => [
-        'format' => 'json',
-        'valid_codes' => ['200'],
-    ],
-];
+$dossierId = $query->param('dossierId');
+
+Assert::that($dossierId)->uuid('dossierId "%s" is not a valid UUID.');
+
+/* @var \HF\ApiClient\Query\Query $query */
+return $query
+    ->withResource(\sprintf('/dossier/dossiers/%s/attachments%s', $dossierId, $query));

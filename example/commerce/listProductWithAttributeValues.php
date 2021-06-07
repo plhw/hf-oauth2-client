@@ -33,28 +33,39 @@ try {
         ->withFilter('query', 'shop.PLHW')
         ->withPage(1, 1);
 
-    $results = $api->commerce_listStores($query);
-    $storeId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listStores($query);
+
+    // first result
+    $storeId = \reset($api->cachedResources['commerce/store'])['id'];
 
     // now we search for a specific catalogue within that store
     $query = Query::create()
         ->withFilter('query', 'Sandalinos Catalogue')
+        ->withParam('storeId', $storeId)
         ->withPage(1, 1);
 
-    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
-    $catalogueId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listCataloguesOfStore($query);
+
+    $catalogueId = \reset($api->cachedResources['commerce/catalogue'])['id'];
 
     $query = Query::create()
-        ->withFilter('code', 'SND')// sandlinos custom made groep!
+        ->withFilter('code', 'S:CM')// sandlinos custom made groep!
+        ->withParam('storeId', $storeId)
+        ->withParam('catalogueId', $catalogueId)
         ->withPage(1, 1);
 
-    $results = $api->commerce_listProductGroupsOfCatalogue($query, $storeId, $catalogueId);
-    $productGroupId = $results['data'][0]['id'] ?? '';
+    $api->commerce_listProductGroupsOfCatalogue($query);
+
+    $productGroupId = \reset($api->cachedResources['commerce/product-group/product-group'])['id'];
 
     // once we have the storeId and the catalogue id, we can get list the product groups
-    $query = Query::create();
-    $query = $query->withIncluded('assigned-values');
-    $results = $api->commerce_listProductsOfProductGroup($query, $storeId, $catalogueId, $productGroupId);
+    $query = Query::create()
+        ->withIncluded('assigned-values')
+        ->withParam('storeId', $storeId)
+        ->withParam('catalogueId', $catalogueId)
+        ->withParam('productGroupId', $productGroupId);
+
+    $results = $api->commerce_listProductsOfProductGroup($query);
 
     // this is new and is an cache of loaded resources, by type and id.
 } catch (IdentityProviderException $e) {
@@ -73,7 +84,7 @@ if ($api->isSuccess() && $results) {
             $result['attributes']['code']
         );
 
-        $attributeValues = $result['relationships']['assigned_values']['data'] ?? [];
+        $attributeValues = $result['relationships']['assigned-values']['data'] ?? [];
 
         foreach ($attributeValues as ['type' => $type, 'id' => $id]) {
             \printf(" %-15s: %s\n", $api->cachedResources[$type][$id]['attributes']['attribute-code'] ?? 'n/a', $api->cachedResources[$type][$id]['attributes']['value'] ?? 'n/a');

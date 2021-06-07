@@ -18,33 +18,39 @@
 declare(strict_types=1);
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$query = Query::create()
-    ->withPage(1, 3)
-    ->withSort('name', false);
-
 try {
-    $results = $api->customer_queryCustomers($query);
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+    $results = $api->customer_queryCustomers(
+        Query::create()
+            ->withPage(1, 3)
+            ->withSort('name', false)
+    );
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
     exit();
-}
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($result);
 
-if ($api->isSuccess()) {
-    foreach ($results['data'] as $result) {
-        \printf("Customer %s\n", $result['attributes']['name']);
-        \printf(" - sells %s\n", \implode(", \n", $result['attributes']['products']));
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
+
+        foreach ($results['data'] as $result) {
+            \printf("Customer %s\n", $result['attributes']['name']);
+            \printf(" - sells %s\n", \implode(", \n", $result['attributes']['products']));
+        }
     }
-} else {
-    \printf("Error (%d)\n", $api->getStatusCode());
-    \print_r($results);
 }

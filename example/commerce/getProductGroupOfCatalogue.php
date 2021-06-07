@@ -26,26 +26,35 @@ use HF\ApiClient\Query\Query;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 try {
-    $query = Query::create()
-        ->withFilter('query', 'shop.PLHW')
-        ->withPage(1, 1);
+    $api->commerce_listStores(
+        Query::create()
+            ->withIncluded('article-groups')
+            ->withFilter('query', 'shop.PLHW')
+            ->withPage(1, 1)
+    );
 
-    $results = $api->commerce_listStores($query);
-    $storeId = $results['data'][0]['id'] ?? '';
+    // first result
+    $storeId = \reset($api->cachedResources['commerce/store'])['id'];
 
-    // now we search for a specific catalogue within that store
-    $query = Query::create()
-        ->withFilter('query', 'Sandalinos Catalogue')
-        ->withIncluded('product-groups')
-        ->withPage(1, 1);
+    $results = $api->commerce_listCataloguesOfStore(
+        Query::create()
+            ->withParam('storeId', $storeId)
+            ->withFilter('query', 'Sandalinos Catalogue')
+            ->withIncluded('product-groups')
+            ->withPage(1, 1)
+    );
 
-    $results = $api->commerce_listCataloguesOfStore($query, $storeId);
+    $catalogueId = \reset($api->cachedResources['commerce/catalogue'])['id'];
 
-    $catalogueId = $results['data'][0]['id'] ?? '';
     // pick a random articleGroupId from the included (just for demo)
-    $randomProductGroupId = \array_rand(\array_flip(\array_column($results['included'], 'id')));
+    $randomProductGroupId = \array_rand(\array_flip(\array_keys($api->cachedResources['commerce/product-group/product-group'])));
 
-    $results = $api->commerce_getProductGroupOfCatalogue(null, $storeId, $catalogueId, $randomProductGroupId);
+    $results = $api->commerce_getProductGroupOfCatalogue(
+        Query::create()
+            ->withParam('storeId', $storeId)
+            ->withParam('catalogueId', $catalogueId)
+            ->withParam('productGroupId', $randomProductGroupId)
+    );
 } catch (IdentityProviderException $e) {
     exit($e->getMessage());
 } catch (GatewayException $e) {

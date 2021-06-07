@@ -26,20 +26,24 @@ use HF\ApiClient\Query\Query;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 try {
-    // we must get a storeId, which is different per environment.
-    // as an example i'll show how you can doe a search by name
-    $query = Query::create()
+    $api->commerce_listStores(
+        Query::create()
         ->withIncluded('article-groups')
         ->withFilter('query', 'shop.PLHW')
-        ->withPage(1, 1);
+        ->withPage(1, 1)
+    );
 
-    $results = $api->commerce_listStores($query);
-    $storeId = $results['data'][0]['id'] ?? '';
+    // first result
+    $storeId = \reset($api->cachedResources['commerce/store'])['id'];
 
     // pick a random articleGroupId from the included (just for demo)
-    $randomArticleGroupId = \array_rand(\array_flip(\array_column($results['included'], 'id')));
+    $randomArticleGroupId = \array_rand(\array_flip(\array_keys($api->cachedResources['commerce/article-group/article-group'])));
 
-    $results = $api->commerce_getArticleGroupOfStore(null, $storeId, $randomArticleGroupId);
+    $results = $api->commerce_getArticleGroupOfStore(
+        Query::create()
+            ->withParam('storeId', $storeId)
+            ->withParam('articleGroupId', $randomArticleGroupId)
+    );
 } catch (IdentityProviderException $e) {
     exit($e->getMessage());
 } catch (GatewayException $e) {

@@ -18,32 +18,35 @@
 declare(strict_types=1);
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
 use HF\ApiClient\Query\Query;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
 $query = Query::create()
     ->withPage(1, 3)
+    ->withParam('dossierId', 'a652e443-ba3f-5841-936c-b6be5c5a2800')
     ->withSort('name', false);
 
 try {
-    $results = $api->dossier_getAttachmentsOfDossier($query, 'a652e443-ba3f-5841-936c-b6be5c5a2800');
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+    $results = $api->dossier_getAttachmentsOfDossier($query);
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
     exit();
-}
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($results);
 
-if ($api->isSuccess()) {
-    foreach ($results['data'] as $result) {
-        \print_r($result);
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
     }
-} else {
-    \printf("Error (%d)\n", $api->getStatusCode());
-    \print_r($results);
 }

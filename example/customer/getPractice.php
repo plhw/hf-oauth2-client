@@ -18,27 +18,37 @@
 declare(strict_types=1);
 
 use HF\ApiClient\ApiClient;
+use HF\ApiClient\Exception\ClientException;
 use HF\ApiClient\Exception\GatewayException;
+use HF\ApiClient\Query\Query;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-$practiceId = $argv[1] ?? exit('uuid required');
+$practiceId = $argv[1] ?? null;
+
+$query = Query::create()
+    ->withParam('practiceId', $practiceId);
 
 try {
-    $results = $api->customer_getPractice($practiceId);
-} catch (IdentityProviderException $e) {
-    exit($e->getMessage());
+    $results = $api->customer_getPractice($query);
+} catch (ClientException $e) {
+    \printf("%s\n\n", $e->getMessage());
+    exit();
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
     exit();
+} catch (\Exception $e) {
+    \printf("%s\n\n", $e->getMessage());
+} finally {
+    if ($api->isSuccess()) {
+        // do something with $results (which is the parsed response object)
+        \var_dump($results);
+
+        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
+        \var_dump($api->cachedResources);
+    }
 }
 
-if ($api->isSuccess()) {
-    \print_r($results);
-} else {
-    \printf("Error (%d)\n", $api->getStatusCode());
-    \print_r($results);
-}

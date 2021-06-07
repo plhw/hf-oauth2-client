@@ -128,7 +128,7 @@ final class ApiClient
      */
     private $accessToken;
 
-    private function __construct(ClientInterface $client, StorageInterface $cache = null, Options $options, $stack)
+    private function __construct(ClientInterface $client, StorageInterface $cache, Options $options, $stack)
     {
         $this->http = $client;
         $this->options = $options;
@@ -138,8 +138,17 @@ final class ApiClient
         $stack->push(new ExtractApiResourcesMiddleware($this->cachedResources));
     }
 
-    public static function createClient(Options $options, StorageInterface $cache = null): self
+    public static function createClient(Options $options, ?StorageInterface $cache = null): self
     {
+        if (!$cache) {
+            // optional but will then use filesystem default tmp directory
+            $cache = StorageFactory::factory([
+                'adapter' => [
+                    'name' => 'memory',
+                ],
+            ]);
+        }
+
         $stack = HandlerStack::create();
         $stack->push(new ErrorResponseMiddleware());
 
@@ -152,6 +161,7 @@ final class ApiClient
         }));
 
         $stack->push(new AccessTokenMiddleware($options, $cache));
+
 
         return new static($client, $cache, $options, $stack);
     }

@@ -29,4 +29,4 @@ Assert::that($query->payload())->notNull('payload is null')->notEmpty('payload i
 return $query
     ->withoutParam('orderLeadId')
     ->withMethod('POST')
-    ->withResource(\sprintf('/dossier/order-leads/%s', $orderLeadId));
+    ->withResource(\sprintf('/customer/order-leads/%s', $orderLeadId));

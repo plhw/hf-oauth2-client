@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@plhw/hf-api-client",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "repository": "ssh://git@github.com:plhw/hf-api-client.git",
   "author": "Bas Kamer <bas@bushbaby.nl>",
   "license": "MIT",
@@ -15,7 +15,7 @@
   },
   "standard-version": {
     "scripts": {
-      "postbump": "./etc/bump-composer-version.js && composer update --lock --ignore-platform-reqs"
+      "postbump": "./etc/bump-composer-version.js && composer update --lock --ignore-platform-reqs && git add composer.json"
     }
   },
   "devDependencies": {

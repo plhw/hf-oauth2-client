@@ -34,7 +34,6 @@ use HF\ApiClient\Stream\JsonStream;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Cache\StorageFactory;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Token\AccessToken;
 
 /**
  * Class ApiClient.
@@ -124,7 +123,7 @@ final class ApiClient
     public $cachedResources = [];
 
     /**
-     * @var AccessToken
+     * @var AccessTokenMiddleware
      */
     private $accessToken;
 
@@ -136,11 +135,14 @@ final class ApiClient
 
         $stack->push(new CaptureResultMiddleware($this->statusCode, $this->responseBody));
         $stack->push(new ExtractApiResourcesMiddleware($this->cachedResources));
+
+        $this->accessToken = new AccessTokenMiddleware($options, $cache);
+        $stack->push($this->accessToken);
     }
 
     public static function createClient(Options $options, ?StorageInterface $cache = null): self
     {
-        if (!$cache) {
+        if (! $cache) {
             // optional but will then use filesystem default tmp directory
             $cache = StorageFactory::factory([
                 'adapter' => [
@@ -159,9 +161,6 @@ final class ApiClient
 
             return $response->withBody($jsonStream);
         }));
-
-        $stack->push(new AccessTokenMiddleware($options, $cache));
-
 
         return new static($client, $cache, $options, $stack);
     }
@@ -209,7 +208,7 @@ final class ApiClient
             switch ($clientException->getCode()) {
                 case 401:
                     // invalidate token and try again
-                    $this->invalidateAccessToken($this->options->getGrantType(), $this->options->getScope());
+                    $this->accessToken->invalidate($this->options->getGrantType(), $this->options->getScope());
 
                     \call_user_func_array([$this, 'request'], $query);
                     break;

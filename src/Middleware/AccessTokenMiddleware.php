@@ -66,6 +66,15 @@ class AccessTokenMiddleware
         return $request;
     }
 
+    public function invalidate(string $grant, string $scope): void
+    {
+        $this->accessToken = null;
+
+        $cacheKey = \sha1($grant . \serialize($scope));
+
+        $this->cache->removeItem($cacheKey);
+    }
+
     private function getAccessToken(string $grant, string $scope): ?AccessToken
     {
         if (null === $this->accessToken || $this->accessToken->hasExpired()) {

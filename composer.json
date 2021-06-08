@@ -3,7 +3,7 @@
   "description": "PLHW API Client provides means to authenticate clients against with OAuth2 server and issue authorized requests to our api endpoints",
   "type": "library",
   "license": "proprietary",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "authors": [
     {
       "name": "Bas Kamer",

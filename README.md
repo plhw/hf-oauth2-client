@@ -1,6 +1,6 @@
 # PLHW Api Client
 
-PLHW API Client provides means to authenticate clients against with OAuth2 server and issue authorized requests to our api endpoints.
+PLHW API Client provides means to authenticate clients against our OAuth2 server and issue authorized requests to our api endpoints.
 
 
 ## Installation
@@ -8,8 +8,6 @@ PLHW API Client provides means to authenticate clients against with OAuth2 serve
 ```bash
 composer require plhw/hf-api-client
 ```
-
-
 
 ## Example API calls
 
@@ -115,3 +113,9 @@ Run all examples in the 'commerce' domain:
 ```
 find ./example/commerce/ -maxdepth 1 -type f -exec {} \;
 ```
+
+## Upgrading
+
+v2 has been rewritten for php 8+. Principals are the same but there are a few minor changes that will break your application.
+
+Please see our examples to see how you interact with the api.

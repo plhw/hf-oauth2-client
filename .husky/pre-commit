@@ -1,0 +1,21 @@
+#
+# Validate composer.json and composer.lock
+#
+composer validate
+
+EXITCODE=$?
+if [ $EXITCODE -ne 0 ]; then
+    exit $EXITCODE
+fi
+
+#
+# Run linting with lint-staged (see lint-staged.config.js)
+#
+npx lint-staged
+
+EXITCODE=$?
+if [ $EXITCODE -ne 0 ]; then
+    exit $EXITCODE
+fi
+
+exit 0

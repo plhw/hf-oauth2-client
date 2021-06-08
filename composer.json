@@ -1,21 +1,22 @@
 {
-  "name":         "plhw/hf-api-client",
-  "description":  "PLHW API Client provides means to authenticate clients against with OAuth2 server and issue authorized requests to our api endpoints",
-  "type":         "library",
-  "license":      "proprietary",
-  "authors":      [
+  "name": "plhw/hf-api-client",
+  "description": "PLHW API Client provides means to authenticate clients against with OAuth2 server and issue authorized requests to our api endpoints",
+  "type": "library",
+  "license": "proprietary",
+  "version": "2.0.0",
+  "authors": [
     {
-      "name":  "Bas Kamer",
+      "name": "Bas Kamer",
       "email": "baskamer@gmail.com"
     }
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "config":       {
+  "config": {
     "optimize-autoloader": true,
-    "sort-packages":       true
+    "sort-packages": true
   },
-  "require":      {
+  "require": {
     "php": "^8.0",
     "beberlei/assert": "^3.3",
     "fig/http-message-util": "^1.1",
@@ -41,11 +42,11 @@
     "laminas/laminas-cache-storage-adapter-xcache": "*",
     "laminas/laminas-cache-storage-adapter-zend-server": "*"
   },
-  "require-dev":  {
+  "require-dev": {
     "plhw/hf-cs-fixer-config": "^1.0",
     "roave/security-advisories": "dev-master"
   },
-  "autoload":     {
+  "autoload": {
     "psr-4": {
       "HF\\ApiClient\\": "src/"
     }
@@ -55,11 +56,11 @@
       "HFTest\\ApiClient\\": "tests/src/"
     }
   },
-  "scripts":      {
-    "check":  [
+  "scripts": {
+    "check": [
       "@cs"
     ],
-    "cs":     "php-cs-fixer fix -v --diff --dry-run",
+    "cs": "php-cs-fixer fix -v --diff --dry-run",
     "cs-fix": "php-cs-fixer fix -v --diff"
   }
 }

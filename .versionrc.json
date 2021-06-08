@@ -1,0 +1,43 @@
+{
+    "types": [
+        {
+            "type": "feat",
+            "section": "Features"
+        },
+        {
+            "type": "fix",
+            "section": "Bug Fixes"
+        },
+        {
+            "type": "chore",
+            "hidden": true
+        },
+        {
+            "type": "docs",
+            "hidden": true
+        },
+        {
+            "type": "style",
+            "hidden": true
+        },
+        {
+            "type": "refactor",
+            "hidden": true
+        },
+        {
+            "type": "perf",
+            "hidden": true
+        },
+        {
+            "type": "test",
+            "hidden": true
+        },
+        {
+            "type": "content",
+            "hidden": false,
+            "section": "Content Changes"
+        }
+    ],
+    "commitUrlFormat": "https://github.com/plhw/hf-api-client/commits/{{hash}}",
+    "compareUrlFormat": "https://github.com/plhw/hf-api-client/compare/{{previousTag}}...{{currentTag}}"
+}

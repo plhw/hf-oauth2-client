@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "name": "@plhw/hf-api-client",
+  "version": "2.0.0",
+  "repository": "ssh://git@github.com:plhw/hf-api-client.git",
+  "author": "Bas Kamer <bas@bushbaby.nl>",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "husky install",
+    "bump-composer-version": "etc/bump-composer-version.js",
+    "release": "standard-version --commit-all --tag-prefix=\"v\"",
+    "release:minor": "standard-version --tag-prefix=\"v\" --commit-all --release-as minor",
+    "release:patch": "standard-version --tag-prefix=\"v\" --commit-all --release-as patch",
+    "release:major": "standard-version --tag-prefix=\"v\" --commit-all --release-as major"
+  },
+  "standard-version": {
+    "scripts": {
+      "postbump": "./etc/bump-composer-version.js && composer update --lock --ignore-platform-reqs"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "latest",
+    "@commitlint/config-conventional": "latest",
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
+    "standard-version": "^9.3.0",
+    "update-json-file": "^1.1.1"
+  }
+}

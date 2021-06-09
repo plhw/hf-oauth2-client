@@ -53,10 +53,10 @@ try {
 } finally {
     if ($api->isSuccess()) {
         // do something with $results (which is the parsed response object)
-        \var_dump($results);
+        dump($results);
 
         // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
-        \var_dump($api->cachedResources);
+        dump($api->cachedResources);
 
         $result = $results['data'];
         \printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],

@@ -25,7 +25,8 @@
     "laminas/laminas-serializer": "^2.10",
     "league/oauth2-client": "^2.6",
     "ocramius/package-versions": "^2.1",
-    "ramsey/uuid": "^4.1"
+    "ramsey/uuid": "^4.1",
+    "symfony/var-dumper": "^5.3"
   },
   "replace": {
     "laminas/laminas-cache-storage-adapter-apc": "*",

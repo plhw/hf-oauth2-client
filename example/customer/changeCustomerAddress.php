@@ -25,17 +25,33 @@ use HF\ApiClient\Query\Query;
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
-try {
-    $dossierNumber = '10003';
-    $productGroupCode = 'S:CM';
+// required, must exist
+$customerId = '81a526d5-9430-49b2-859e-af77a907fcd6'; // Behandelaar.B1 (op testing)
 
-    $results = $api->dossier_queryOrders(
+/** @var string $label business|delivery|visiting|billing */
+$label = 'business';
+
+/** @var null|[] $address */
+$address = [
+    'street' => 'Kanaalstraat',
+    'street_ordinality' => '149',
+    'street_ordinality_suffix' => 'A',
+    'postal_code' => '1054 XD',
+    'populated_place' => 'Amsterdam',
+    'country' => 'NL',
+];
+
+$payload = [
+    'customerId' => '81a526d5-9430-49b2-859e-af77a907fcd6', // Behandelaar.B1 (op testing)
+    'label' => $label,
+    'address' => $address,
+];
+
+try {
+    $result = $api->customer_updateAddress(
         Query::create()
-            ->withFilter('query', $dossierNumber) // filter by on dossier.dossierNumber
-            ->withFilter('status', 'archived') // sort order.status (OPENED, ARCHIVED, DELETED)
-            ->withFilter('productGroup', $productGroupCode)
-            ->withSort('placementDate', false)
-            ->withPage(1, 10)
+            ->withParam('customerId', $customerId)
+            ->withPayload($payload)
     );
 } catch (ClientException $e) {
     \printf("%s\n\n", $e->getMessage());
@@ -43,21 +59,13 @@ try {
 } catch (GatewayException $e) {
     \printf("%s\n\n", $e->getMessage());
     \printf('%s', $api->getLastResponseBody());
-    exit();
 } catch (\Exception $e) {
     \printf("%s\n\n", $e->getMessage());
+    \printf('%s', $api->getLastResponseBody());
 } finally {
     if ($api->isSuccess()) {
-        // do something with $results (which is the parsed response object)
-        dump($results);
+        echo 'ok';
 
-        // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
-        dump($api->cachedResources);
-
-        \printf("Archived orders from '%s' and dossier number %s\n", $productGroupCode, $dossierNumber);
-
-        foreach ($results['data'] as $order) {
-            \printf("Ordernumber %s, placed on: %s\n", $order['attributes']['order-number'], $order['attributes']['placement-date'] ?: 'not-placed');
-        }
+        // now do something with $orderLeadId.
     }
 }

@@ -20,7 +20,6 @@ declare(strict_types=1);
 namespace HF\ApiClient\Query;
 
 use Assert\Assertion;
-use PackageVersions\Versions;
 use Zend\Http\Header\AcceptLanguage;
 use Zend\Http\Header\UserAgent;
 
@@ -176,7 +175,7 @@ class Query
             $al->addLanguage($language, 1 - (($key + .1) / \count($languages)));
         }
 
-        $ua = new UserAgent(\sprintf('PLHW Api Client \'%s\'', Versions::getVersion('plhw/hf-api-client')));
+        $ua = new UserAgent(\sprintf('PLHW Api Client \'%s\'', '1.0.1'));
 
         $this->headers[$ua->getFieldName()] = $ua->getFieldValue();
         $this->headers[$al->getFieldName()] = $al->getFieldValue();

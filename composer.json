@@ -44,7 +44,7 @@
     "laminas/laminas-cache-storage-adapter-zend-server": "*"
   },
   "require-dev": {
-    "plhw/hf-cs-fixer-config": "^1.0",
+    "plhw/hf-cs-fixer-config": "^2.0",
     "roave/security-advisories": "dev-master"
   },
   "autoload": {

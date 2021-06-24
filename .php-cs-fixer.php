@@ -17,7 +17,14 @@
 
 declare(strict_types=1);
 
-$config = new \HF\CS\Config();
+$config = new \HF\CS\Config([
+    'native_function_invocation' => [
+    'include' => ['@all'],
+    'scope' => 'all',
+    'strict' => true, // or remove this line, as false is default value
+    'exclude' => ['time'],
+],
+]);
 
 $config
   ->getFinder()

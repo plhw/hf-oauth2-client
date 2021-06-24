@@ -28,11 +28,17 @@ use PackageVersions\Versions;
 class Query
 {
     private $resource = '';
+
     private $method = 'GET';
+
     private $filter = [];
+
     private $page = [];
+
     private $include = [];
+
     private $sort = [];
+
     private $other = [];
 
     private $headers = [

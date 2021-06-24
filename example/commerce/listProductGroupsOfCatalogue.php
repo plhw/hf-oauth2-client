@@ -68,11 +68,12 @@ try {
 
 if ($api->isSuccess() && $results) {
     foreach ($results['data'] as $result) {
-        \printf("ProductGroup %s : %s (%s)\n",
+        \printf(
+            "ProductGroup %s : %s (%s)\n",
             $result['id'],
             $result['attributes']['description'],
             $result['attributes']['code']
-            );
+        );
     }
 } else {
     \printf("Error (%d)\n", $api->getStatusCode());

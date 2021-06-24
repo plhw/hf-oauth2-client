@@ -33,13 +33,14 @@ class PLHWProvider extends GenericProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
         if (! empty($data['error'])) {
             $code = 0;
             $error = $data['error_description'];
+
             throw new IdentityProviderException($error, $code, $data);
         }
     }

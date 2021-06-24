@@ -22,12 +22,19 @@ namespace HF\ApiClient\Options;
 final class Options
 {
     private $serverUri;
+
     private $clientId;
+
     private $clientSecret;
+
     private $redirectUri;
+
     private $authorizeUri;
+
     private $tokenUri;
+
     private $resourceOwnerDetailsUri;
+
     private $grantType;
 
     private function __construct(

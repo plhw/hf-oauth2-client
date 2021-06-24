@@ -31,7 +31,9 @@ use Psr\Http\Message\RequestInterface;
 class AccessTokenMiddleware
 {
     private $cache;
+
     private $options;
+
     private $accessToken;
 
     public function __construct(Options $options, StorageInterface $cache)

@@ -41,14 +41,18 @@ try {
 } finally {
     if ($api->isSuccess()) {
         // do something with $results (which is the parsed response object)
-        dump($results);
+        \dump($results);
 
         // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
-        dump($api->cachedResources);
+        \dump($api->cachedResources);
 
         foreach ($results['data'] as $result) {
-            \printf("Store %s : %s (%s)\n", $result['id'], $result['attributes']['name'],
-                $result['attributes']['description']);
+            \printf(
+                "Store %s : %s (%s)\n",
+                $result['id'],
+                $result['attributes']['name'],
+                $result['attributes']['description']
+            );
 
             foreach ($result['relationships']['article-groups']['data'] as $rel) {
                 foreach ($results['included'] as $include) {

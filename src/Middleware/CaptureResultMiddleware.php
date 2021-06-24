@@ -25,6 +25,7 @@ use Psr\Http\Message\ResponseInterface;
 class CaptureResultMiddleware
 {
     private $statusCode;
+
     private $responseBody;
 
     public function __construct(&$statusCode, &$responseBody)

@@ -65,8 +65,10 @@ try {
 
 if ($api->isSuccess() && $results) {
     $result = $results['data'];
-    \printf("ProductGroup %s : %s (%s)\n",
-        $result['id'], $result['attributes']['description'],
+    \printf(
+        "ProductGroup %s : %s (%s)\n",
+        $result['id'],
+        $result['attributes']['description'],
         $result['attributes']['code']
     );
 } else {

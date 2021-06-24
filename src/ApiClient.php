@@ -211,6 +211,7 @@ final class ApiClient
                     $this->accessToken->invalidate($this->options->getGrantType(), $this->options->getScope());
 
                     \call_user_func_array([$this, 'request'], $query);
+
                     break;
                 default:
                     throw $clientException;

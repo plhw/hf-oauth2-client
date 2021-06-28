@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@plhw/hf-api-client",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "repository": "ssh://git@github.com:plhw/hf-api-client.git",
   "author": "Bas Kamer <bas@bushbaby.nl>",
   "license": "MIT",

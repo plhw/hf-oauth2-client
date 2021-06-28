@@ -63,8 +63,6 @@ class ExtractApiResourcesMiddleware
 
     private function extractResources($result)
     {
-        $cachedResources = [];
-
         if (isset($result['data'])) {
             if (isset($result['data']['id'])) {
                 $resources = [$result['data']];
@@ -86,7 +84,5 @@ class ExtractApiResourcesMiddleware
                 $this->resources[$resource['type']][$resource['id']] = $cachedResource;
             }
         }
-
-        return $result;
     }
 }

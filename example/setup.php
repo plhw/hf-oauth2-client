@@ -62,5 +62,5 @@ $cache = StorageFactory::factory([
     ],
     'plugins' => ['serializer'],
 ]);
-$cache = null;
+//$cache = null;
 $api = ApiClient::createClient($options, $cache);

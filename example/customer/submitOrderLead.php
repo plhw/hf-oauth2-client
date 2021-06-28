@@ -65,7 +65,7 @@ $payload = [
         'dossierId' => (string) Uuid::uuid4(),
 
         // optional, string|null (is a reference the behandelaar might use)
-        'externalReference' => null,
+        'externalReference' => 'my-ref',
 
         // key must exists if dossierId is unknown
         'name' => [
@@ -78,12 +78,13 @@ $payload = [
             // optional, string|null
             'familyname_preposition' => 'van',
         ],
-        // required, string YYYY-MM-DD
-        'date-of-birth' => '',
-        // required, string male,female,intersex
+        // optional, string YYYY-MM-DD
+        'date-of-birth' => '1972-03-21',
+        // optional, string male,female,intersex
         'sex' => 'male',
         // optional
         'email' => 'xxx@xxx.nl',
+        // optional
         'phone' => 'xxxxxx',
         // optional
         'address' => [

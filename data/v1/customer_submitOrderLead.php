@@ -23,8 +23,36 @@ use Assert\Assert;
 
 $orderLeadId = $query->param('orderLeadId');
 
+$payload = $query->payload();
+
 Assert::that($orderLeadId)->uuid('orderLeadId "%s" is not a valid UUID.');
-Assert::that($query->payload())->notNull('payload is null')->notEmpty('payload is empty');
+Assert::that($payload)->notNull('payload is null')->isArray('payload must be an array')->notEmpty('payload is empty');
+
+Assert::that($payload)->keyExists('customerId');
+Assert::that($payload['customerId'])->uuid('payload.customerId "%s" is not a valid UUID.');
+
+Assert::that($payload)->keyExists('practiceId');
+Assert::that($payload['practiceId'])->uuid('payload.practiceId "%s" is not a valid UUID.');
+
+Assert::that($payload)->keyExists('order');
+$order = $payload['order'];
+
+Assert::that($order)->keyExists('orderId');
+Assert::that($order['orderId'])->uuid('payload.order.orderId "%s" is not a valid UUID.');
+Assert::that($order)->keyExists('productGroupId');
+Assert::that($order['productGroupId'])->uuid('payload.order.productGroupId "%s" is not a valid UUID.');
+Assert::that($order)->keyExists('properties');
+Assert::that($order['properties'])->notNull()->isArray('payload.order.properties "%s" must be an array.');
+
+$dossier = $payload['dossier'];
+Assert::that($dossier)->keyExists('dossierId');
+Assert::that($dossier['dossierId'])->uuid('payload.dossier.dossierId "%s" is not a valid UUID.');
+Assert::that($dossier['externalReference'])
+    ->nullOr()
+    ->string('payload.dossier.externalReference must null or string')
+    ->notEmpty('payload.dossier.externalReference must not be empty');
+
+Assert::that($dossier)->notNull()->isArray('payload.dossier.properties "%s" must be an array.');
 
 return $query
     ->withoutParam('orderLeadId')

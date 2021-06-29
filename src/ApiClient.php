@@ -38,27 +38,42 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 /**
  * Class ApiClient.
  *
- * @method array commerce_getArticleGroupOfStore(?Query $query)
- * @method array commerce_getProductGroupOfCatalogue(?Query $query)
- * @method array commerce_getProductOfProductGroup(?Query $query)
+ * @method array commerce_getArticleGroupOfStore(Query $query)
+ * @method array commerce_getProductGroupOfCatalogue(Query $query)
+ * @method array commerce_getProductOfProductGroup(Query $query)
  * @method array commerce_getStore(Query $query)
- * @method array commerce_listArticleGroupsOfStore(?Query $query)
- * @method array commerce_listCataloguesOfStore(?Query $query)
- * @method array commerce_listProductGroupsOfCatalogue(?Query $query)
- * @method array commerce_listProductsOfProductGroup(?Query $query)
- * @method array commerce_listStores(?Query $query)
+ * @method array commerce_listArticleGroupsOfStore(Query $query)
+ * @method array commerce_listCataloguesOfStore(Query $query)
+ * @method array commerce_listProductGroupsOfCatalogue(Query $query)
+ * @method array commerce_listProductsOfProductGroup(Query $query)
+ * @method array commerce_listStores(Query $query)
  * @method array commerce_retrieveSandalinosCompositionByCode(Query $query)
  * @method array commerce_submitSandalinosComposition(Query $query)
- * @method array customer_getCustomer($customerId);
- * @method array customer_getPractice($practiceId);
+ * @method array customer_getCustomer(Query $query);
+ * @method array customer_getOrderLead(Query $query);
+ * @method array customer_getPractice(Query $query);
  * @method array customer_listPosAroundCoordinate(Query $query);
  * @method array customer_queryCustomers(Query $query);
+ * @method array customer_queryOrderLeads(Query $query);
  * @method array customer_queryPractices(Query $query);
- * @method array dossier_getAttachmentsOfDossier(?Query $query);
- * @method array dossier_getDossier(?Query $query);
- * @method array dossier_getOrder(?Query $query);
- * @method array dossier_queryDossiers(?Query $query);
- * @method array dossier_queryOrders(?Query $query);
+ * @method array customer_submitOrderLead(Query $query);
+ * @method array customer_updateAddress(Query $query);
+ * @method array customer_updateBicNumber(Query $query)
+ * @method array customer_updateCocNumber(Query $query)
+ * @method array customer_updateIbanNumber(Query $query)
+ * @method array customer_updateName(Query $query)
+ * @method array customer_updatePracticeAddress(Query $query)
+ * @method array customer_updatePracticeName(Query $query)
+ * @method array customer_updatePracticeSupportEmail(Query $query)
+ * @method array customer_updatePracticeSupportPhone(Query $query)
+ * @method array customer_updateSupportEmail(Query $query)
+ * @method array customer_updateSupportPhone(Query $query)
+ * @method array customer_updateVatNumber(Query $query)
+ * @method array dossier_getAttachmentsOfDossier(Query $query)
+ * @method array dossier_getDossier(Query $query)
+ * @method array dossier_getOrder(Query $query)
+ * @method array dossier_queryDossiers(Query $query)
+ * @method array dossier_queryOrders(Query $query)
  */
 final class ApiClient
 {

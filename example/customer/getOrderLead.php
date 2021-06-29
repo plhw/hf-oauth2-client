@@ -25,17 +25,14 @@ use HF\ApiClient\Query\Query;
 /** @var $api ApiClient */
 require_once __DIR__ . '/../setup.php';
 
+$orderLeadId = $argv[1] ?? null;
+
+$query = Query::create()
+    // ->withIncluded('customer,practice') // side load customer and practice
+    ->withParam('orderLeadId', $orderLeadId);
+
 try {
-    $results = $api->dossier_queryDossiers(
-        Query::create()
-            //->withIncluded('orders') // include releationships dossier.orders (resource "dossier/order")
-        //    ->withFilter('query', 'Bas') // filter by on dossier.name.givenname or dossier.name.familyname
-            // ->withFilter('query', 'nnn') // filter by on dossier.dossierNumber if query is numeric
-      //      ->withFilter('status', 'opened') // sort order.status (opened, archived, deleted)
-            ->withFilter('owningCustomerId', '81a526d5-9430-49b2-859e-af77a907fcd6') // filter by on owing customer
-//            ->withFilter('owningPracticeId', 'uuid') // filter by on owing practice
-            ->withPage(1, 10)
-    );
+    $result = $api->customer_getOrderLead($query);
 } catch (ClientException $e) {
     \printf("%s\n\n", $e->getMessage());
     exit();
@@ -48,9 +45,9 @@ try {
 } finally {
     if ($api->isSuccess()) {
         // do something with $results (which is the parsed response object)
-        \dump($results);
+        \dump($result);
 
         // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
-        //\dump($api->cachedResources);
+        \dump($api->cachedResources);
     }
 }

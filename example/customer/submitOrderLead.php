@@ -115,7 +115,7 @@ try {
     \printf('%s', $api->getLastResponseBody());
 } finally {
     if ($api->isSuccess()) {
-        echo 'ok';
+        echo 'ok, orderLead created: ' . $orderLeadId;
 
         // now do something with $orderLeadId.
     }

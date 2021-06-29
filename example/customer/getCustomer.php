@@ -28,7 +28,7 @@ require_once __DIR__ . '/../setup.php';
 $customerId = $argv[1] ?? null;
 
 try {
-    $results = $api->customer_getCustomer(
+    $result = $api->customer_getCustomer(
         Query::create()
             ->withParam('customerId', $customerId)
     );
@@ -44,7 +44,7 @@ try {
 } finally {
     if ($api->isSuccess()) {
         // do something with $results (which is the parsed response object)
-        \dump($results);
+        \dump($result);
 
         // or do something with $api->cachesResources (which contains a (flattened) array of json-api resources by resource type type)
         \dump($api->cachedResources);
